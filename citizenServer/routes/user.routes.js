@@ -10,20 +10,18 @@ module.exports = function(app) {
     );
     next();
   });
+  
 
-  app.get("/api/test/all", userController.allAccess);
-
-  app.get("/api/test/user", [authJwt.verifyToken], userController.userBoard);
 
   app.get(
-    "/api/test/A1",
+    "/api/test/A2",
     [authJwt.verifyToken, authJwt.isA1],
-    userController.moderatorBoard
+    userController.getA2
   );
 
-  app.get("/api/test/A1",
-    [authJwt.verifyToken, authJwt.isA1],
-    userController.adminBoard
+  app.get("/api/test/A3",
+    [authJwt.verifyToken, authJwt.isA2],
+    userController.getA3
   );
 
 
@@ -32,7 +30,7 @@ module.exports = function(app) {
     [
       authJwt.verifyToken, authJwt.isA1,
       verifySignUp.checkDuplicateUsername,
-      verifySignUp.checkRolesExisted
+      verifySignUp.checkRolesExisted,
     ],
     controller.signupA2
   );
@@ -44,9 +42,16 @@ module.exports = function(app) {
       authJwt.verifyToken, authJwt.isA2,
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted
+      //authJwt.checkWorkingTime
     ],
     controller.signupA3
   );
+
+  app.post("/create/A1", [
+    verifySignUp.checkDuplicateUsername,
+    verifySignUp.checkRolesExisted],
+    controller.signupA1
+    )
 
   
   //A3 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B1

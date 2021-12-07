@@ -199,3 +199,23 @@ const authJwt = {
   isB2
 };
 module.exports = authJwt;
+
+//kiểm tra working time
+checkWorkingTime = (req, res, next) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    var currentTime = new Date();
+      if(currentTime.getTime() > user.timeStart.getTime() 
+      && currentTime.getTime() < user.timeFinish.getTime())
+    {
+      next();
+      return;
+    }
+    
+  })
+}
+
+  

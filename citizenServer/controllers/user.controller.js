@@ -1,16 +1,17 @@
-exports.allAccess = (req, res) => {
-    res.status(200).send("Public Content.");
+//get list of user.
+ exports.getA2 = (req, res) => {
+    res.status(200).send("A2 Content.");
   };
   
-  exports.userBoard = (req, res) => {
-    res.status(200).send("User Content.");
+  exports.getA3 = (req, res) => {
+    res.status(200).send("A3 Content.");
   };
   
-  exports.adminBoard = (req, res) => {
-    res.status(200).send("Admin Content.");
+  exports.getB1 = (req, res) => {
+    res.status(200).send("B1 Content.");
   };
   
-  exports.moderatorBoard = (req, res) => {
-    res.status(200).send("Moderator Content.");
+  exports.getB2 = (req, res) => {
+    res.status(200).send("B2 Content.");
   };
   

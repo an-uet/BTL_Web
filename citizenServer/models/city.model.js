@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 var citySchema = new Schema({
     cityID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     cityName: {
@@ -12,5 +12,5 @@ var citySchema = new Schema({
     }
 })
 
-var Citis = mongoose.model('City', citySchema);
-module.exports = Citis;
+var City = mongoose.model('City', citySchema);
+module.exports = City;

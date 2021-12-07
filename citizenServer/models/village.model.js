@@ -3,18 +3,18 @@ const Schema = mongoose.Schema;
 
 var villageSchema = new Schema({
     villageID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     villageName: {
         type: String,
         required:true
     },
-    wardID: {
+    ward: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'District'
     }
 });
 
-var Villages = mongoose.model('Village', villageSchema);
-module.exports = Villages;
+var Village = mongoose.model('Village', villageSchema);
+module.exports = Village;

@@ -51,6 +51,8 @@ mongoose
 // routes
 
 require("./routes/user.routes")(app);
+require("./routes/city.routes")(app);
+require("./routes/district.routes")(app);
 
 
 // connect success create collection in database

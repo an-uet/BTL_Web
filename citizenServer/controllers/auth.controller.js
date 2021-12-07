@@ -2,17 +2,23 @@ const config = require("../config/auth.config")
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
+const City = db.city;
+const District = db.district;
+const Ward = db.ward;
+const Village = db.village;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const { village } = require("../models");
 
+//signup A1
 
+exports.signupA1 = (req, res) => {
 
-//signup user: A2
-exports.signupA2 = (req, res) => {
   const user = new User({
     username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    
   });
 
   user.save((err, user) => {
@@ -20,33 +26,8 @@ exports.signupA2 = (req, res) => {
       res.status(500).send({ message: err });
       return;
     }
-    /*
 
-    if (req.body.roles) {
-      Role.find(
-        {
-          name: { $in: req.body.roles }
-        },
-        (err, roles) => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-
-          user.roles = roles.map(role => role._id);
-          user.save(err => {
-            if (err) {
-              res.status(500).send({ message: err });
-              return;
-            }
-
-            res.send({ message: "User was registered successfully!" });
-          });
-        }
-      );
-    } */
-
-    Role.findOne({ name: "A2" }, (err, role) => {
+    Role.findOne({ name: "A1" }, (err, role) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
@@ -67,11 +48,56 @@ exports.signupA2 = (req, res) => {
 };
 
 
+//signup user: A2
+exports.signupA2 = (req, res) => {
+  const user = new User({
+    username: req.body.username,
+    password: bcrypt.hashSync(req.body.password, 8),
+    createBy: 'A1',
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
+  });
+
+  user.save((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    Role.findOne({ name: "A2" }, (err, role) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      user.roles = [role._id];
+      
+      City.findOne({ cityID: req.body.username}, (err, city) => {
+        if (err) {
+           res.status(500).send({ message: err });
+          return;
+        }
+          user.city = city._id;
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            res.send({ message: "User was registered successfully!" });
+          }); 
+        
+      });
+    });
+  });
+};
+
 //signup user: A3
 exports.signupA3 = (req, res) => {
   const user = new User({
     username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    createBy: req.user.CityID,
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
   });
 
   user.save((err, user) => {
@@ -87,13 +113,20 @@ exports.signupA3 = (req, res) => {
       }
 
       user.roles = [role._id];
-      user.save(err => {
+      District.findOne({ districtID: req.body.username}, (err, district) => {
         if (err) {
-          res.status(500).send({ message: err });
+           res.status(500).send({ message: err });
           return;
         }
-
-        res.send({ message: "User was registered successfully!" });
+          user.district = district._id;
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            res.send({ message: "User was registered successfully!" });
+          }); 
+        
       });
     });
 
@@ -105,7 +138,10 @@ exports.signupA3 = (req, res) => {
 exports.signupB1 = (req, res) => {
   const user = new User({
     username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    createBy: 'A3',
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
   });
 
   user.save((err, user) => {
@@ -138,7 +174,10 @@ exports.signupB1 = (req, res) => {
 exports.signupB2 = (req, res) => {
   const user = new User({
     username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    createBy: 'B1',
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
   });
 
   user.save((err, user) => {
@@ -159,7 +198,6 @@ exports.signupB2 = (req, res) => {
           res.status(500).send({ message: err });
           return;
         }
-
         res.send({ message: "User was registered successfully!" });
       });
     });
@@ -173,7 +211,8 @@ exports.signin = (req, res) => {
   User.findOne({
     username: req.body.username
   })
-    .populate("roles", "-__v")
+    .populate("roles")
+    .populate("city")
     .exec((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -204,12 +243,26 @@ exports.signin = (req, res) => {
 
       for (let i = 0; i < user.roles.length; i++) {
         authorities.push(user.roles[i].name.toUpperCase());
+
       }
+      var city_name = ""
+      if (user.city) {
+        city_name = user.city.cityName
+      }
+
       res.status(200).send({
         id: user._id,
         username: user.username,
-        roles: authorities,
+        role: authorities,
+        createBy: user.createBy,
+        timeStart: user.timeStart,
+        timeFinish: user.timeFinish,
+        city: city_name,
+        district: "",
+        ward: "",
+        village: "",
         accessToken: token
+
       });
     });
 };

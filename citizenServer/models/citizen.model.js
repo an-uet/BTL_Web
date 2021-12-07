@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 var citizenSchema = new Schema({
     citizenID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     firstname: {

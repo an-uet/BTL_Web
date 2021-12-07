@@ -3,18 +3,18 @@ const Schema = mongoose.Schema;
 
 var districtSchema = new Schema({
     districtID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     districtName: {
         type: String,
         required:true
     },
-    cityID: {
+    city: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City'
     }
 });
 
-var Districts = mongoose.model('District', districtSchema);
-module.exports = Districts;
+var District = mongoose.model('District', districtSchema);
+module.exports = District;
