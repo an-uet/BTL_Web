@@ -1,4 +1,6 @@
 const config = require("../config/auth.config")
+
+var globaldata = require('./globaldata');
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
@@ -11,6 +13,8 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 const { village } = require("../models");
 
+
+
 //signup A1
 
 exports.signupA1 = (req, res) => {
@@ -18,7 +22,8 @@ exports.signupA1 = (req, res) => {
   const user = new User({
     username: req.body.username,
     password: bcrypt.hashSync(req.body.password, 8),
-    
+    active: 1,
+
   });
 
   user.save((err, user) => {
@@ -50,10 +55,11 @@ exports.signupA1 = (req, res) => {
 
 //signup user: A2
 exports.signupA2 = (req, res) => {
+  const creator = new User(globaldata);
   const user = new User({
     username: req.body.username,
     password: bcrypt.hashSync(req.body.password, 8),
-    createBy: 'A1',
+    createBy: creator.username,
     timeStart: req.body.timeStart,
     timeFinish: req.body.timeFinish
   });
@@ -62,6 +68,18 @@ exports.signupA2 = (req, res) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
+    }
+
+    var currentTime = new Date();
+    if (req.body.timeStart && req.body.timeFinish) {
+      var time1 = new Date(req.body.timeStart);
+      var time2 = new Date(req.body.timeFinish);
+      if (time1 <= currentTime && currentTime <= time2) {
+        user.active = 1
+      }
+      else {
+        user.active = 0
+      }
     }
     Role.findOne({ name: "A2" }, (err, role) => {
       if (err) {
@@ -70,54 +88,69 @@ exports.signupA2 = (req, res) => {
       }
 
       user.roles = [role._id];
-      
-      City.findOne({ cityID: req.body.username}, (err, city) => {
+
+      City.findOne({ cityID: req.body.username }, (err, city) => {
         if (err) {
-           res.status(500).send({ message: err });
+          res.status(500).send({ message: err });
           return;
         }
-          user.city = city._id;
-          user.save(err => {
-            if (err) {
-              res.status(500).send({ message: err });
-              return;
-            }
-            res.send({ message: "User was registered successfully!" });
-          }); 
-        
+        user.city = city._id;
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+          res.send({ message: "User was registered successfully!" });
+        });
+
       });
     });
+
+
   });
 };
 
 //signup user: A3
 exports.signupA3 = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    createBy: req.user.CityID,
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
+  const creator = new User(globaldata);
+  if (creator.active == 1) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      createBy: creator.username,
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish
+    });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    Role.findOne({ name: "A3" }, (err, role) => {
+    user.save((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
+      var currentTime = new Date();
+      if (req.body.timeStart && req.body.timeFinish) {
+        var time1 = new Date(req.body.timeStart);
+        var time2 = new Date(req.body.timeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1
+        }
+        else {
+          user.active = 0
+        }
+      }
 
-      user.roles = [role._id];
-      District.findOne({ districtID: req.body.username}, (err, district) => {
+      Role.findOne({ name: "A3" }, (err, role) => {
         if (err) {
-           res.status(500).send({ message: err });
+          res.status(500).send({ message: err });
           return;
         }
+
+        user.roles = [role._id];
+        District.findOne({ districtID: req.body.username }, (err, district) => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
           user.district = district._id;
           user.save(err => {
             if (err) {
@@ -125,84 +158,124 @@ exports.signupA3 = (req, res) => {
               return;
             }
             res.send({ message: "User was registered successfully!" });
-          }); 
-        
+          });
+
+        });
       });
     });
+  }
 
-  });
+  else {
+    res.send({ message: "time up!" });
+  }
 };
 
 
 //signup user: B1
 exports.signupB1 = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    createBy: 'A3',
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
+  const creator = new User(globaldata);
+  if (creator.active = 1) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      createBy: creator.username,
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish
+    });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    Role.findOne({ name: "B1" }, (err, role) => {
+    user.save((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
 
-      user.roles = [role._id];
-      user.save(err => {
+      var currentTime = new Date();
+      if (req.body.timeStart && req.body.timeFinish) {
+        var time1 = new Date(req.body.timeStart);
+        var time2 = new Date(req.body.timeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1
+        }
+        else {
+          user.active = 0
+        }
+      }
+      Role.findOne({ name: "B1" }, (err, role) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
+        user.roles = [role._id];
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
 
-        res.send({ message: "User was registered successfully!" });
+          res.send({ message: "User was registered successfully!" });
+        });
       });
-    });
 
-  });
+    });
+  }
+  else {
+    res.send({ message: "time up!" });
+  }
+
 };
 
 //signup user: B2
 exports.signupB2 = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    createBy: 'B1',
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
+  const creator = new User(globaldata);
+  if (creator.active = 1) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      createBy: creator.username,
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish
+    });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    Role.findOne({ name: "B2" }, (err, role) => {
+    user.save((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
 
-      user.roles = [role._id];
-      user.save(err => {
+      var currentTime = new Date();
+      if (req.body.timeStart && req.body.timeFinish) {
+        var time1 = new Date(req.body.timeStart);
+        var time2 = new Date(req.body.timeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1
+        }
+        else {
+          user.active = 0
+        }
+      }
+
+      Role.findOne({ name: "B2" }, (err, role) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-        res.send({ message: "User was registered successfully!" });
-      });
-    });
 
-  });
+        user.roles = [role._id];
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+          res.send({ message: "User was registered successfully!" });
+        });
+      });
+
+    });
+  }
+  else {
+    res.send({ message: "time up!" });
+  }
+
 };
 
 
@@ -213,6 +286,7 @@ exports.signin = (req, res) => {
   })
     .populate("roles")
     .populate("city")
+    .populate("district")
     .exec((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -246,8 +320,12 @@ exports.signin = (req, res) => {
 
       }
       var city_name = ""
+      var district_name = ""
       if (user.city) {
         city_name = user.city.cityName
+      }
+      if (user.district) {
+        district_name = user.district.districtName
       }
 
       res.status(200).send({
@@ -258,11 +336,18 @@ exports.signin = (req, res) => {
         timeStart: user.timeStart,
         timeFinish: user.timeFinish,
         city: city_name,
-        district: "",
+        district: district_name,
         ward: "",
         village: "",
-        accessToken: token
+        accessToken: token,
+        isActive: user.active,
+
 
       });
+      globaldata = user;
+      console.log(globaldata)
     });
 };
+
+
+

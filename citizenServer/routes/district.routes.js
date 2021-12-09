@@ -1,64 +1,9 @@
 const db = require("../models");
 const District = db.district;
+const User = db.user;
 const { authJwt } = require("../middlewares");
-
-
-//kiểm tra trùng lặp thành phố
-checkDuplicateDistrict = (req, res, next) => {
-    // districtname
-    District.findOne({
-        districtName: req.body.name,
-    }).exec((err, district) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-
-        if (district) {
-            res.status(400).send({ message: "Failed! districtName is already exited!" });
-            return;
-        }
-        next();
-    });
-};
-
-//kiểm tra trùng lặp mã
-checkDuplicateDistrictID = (req, res, next) => {
-    // districtID
-    District.findOne({
-        districtID: req.body.ID,
-    }).exec((err, district) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-
-        if (district) {
-            res.status(400).send({ message: "Failed! districtID is already exited!" });
-            return;
-        }
-        next();
-    });
-};
-
-//kiểm tra tồn tại thành phố/ tỉnh hay không:
-checkDistrictExisted = (req, res, next) => {
-    // districtID
-    District.findOne({
-        districtID: req.body.ID,
-    }).exec((err, district) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-        if (!district) {
-            res.status(400).send({ message: "Failed! districtID is not exited!" });
-            return;
-        }
-        next();
-    });
-};
-
+const checkDistrict = require("../middlewares/checkDistrict")
+var globaldata = require('../controllers/globaldata');
 
 //routes
 module.exports = function (app) {
@@ -67,13 +12,14 @@ module.exports = function (app) {
     app.post("/create/district",
         [
             authJwt.verifyToken, authJwt.isA2,
-            checkDuplicateDistrict,
-            checkDuplicateDistrictID
+            checkDistrict.checkDuplicateDistrictID,
+            checkDistrict.checkDuplicateDistrict
         ],
         (req, res) => {
+            const creator = new User(globaldata);
             const district = new District({
-                districtID: req.body.ID,
-                districtName: req.body.name
+                districtID: req.body.districtID,
+                districtName: req.body.districtName
             });
 
             district.save((err, district) => {
@@ -81,6 +27,7 @@ module.exports = function (app) {
                     res.status(500).send({ message: err });
                     return;
                 }
+                console.log(globaldata)
                 res.send({ message: "District was created successfully!" });
             })
         }
@@ -88,9 +35,9 @@ module.exports = function (app) {
 
     //xóa mã: truyền vào disctrictID.
     app.delete("/delete/district",
-        [authJwt.verifyToken, authJwt.isA2, checkDistrictExisted],
+        [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted],
         (req, res) => {
-            District.findOneAndDelete({districtID: req.body.ID})
+            District.findOneAndDelete({districtID: req.body.districtID})
                 .exec((err, district) => {
                     if (err) {
                         res.status(500).send({ message: err });

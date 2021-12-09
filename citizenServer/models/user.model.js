@@ -31,7 +31,8 @@ const User = mongoose.model(
     village: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Village"
-    }
+    },
+    active: Number,
   })
 );
 

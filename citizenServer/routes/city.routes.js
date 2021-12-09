@@ -1,64 +1,7 @@
 const db = require("../models");
 const City = db.city;
 const { authJwt } = require("../middlewares");
-
-
-//kiểm tra trùng lặp thành phố
-checkDuplicateCity = (req, res, next) => {
-    // cityname
-    City.findOne({
-        cityName: req.body.cityName,
-    }).exec((err, city) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-
-        if (city) {
-            res.status(400).send({ message: "Failed! cityName is already exited!" });
-            return;
-        }
-        next();
-    });
-};
-
-//kiểm tra trùng lặp mã
-checkDuplicateCityID = (req, res, next) => {
-    // cityID
-    City.findOne({
-        cityID: req.body.cityID,
-    }).exec((err, city) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-
-        if (city) {
-            res.status(400).send({ message: "Failed! cityID is already exited!" });
-            return;
-        }
-        next();
-    });
-};
-
-//kiểm tra tồn tại thành phố/ tỉnh hay không:
-checkCityExisted = (req, res, next) => {
-    // cityID
-    City.findOne({
-        cityID: req.body.cityID,
-    }).exec((err, city) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-        if (!city) {
-            res.status(400).send({ message: "Failed! cityID is not exited!" });
-            return;
-        }
-        next();
-    });
-};
-
+const checkCity = require("../middlewares/checkCity")
 
 //routes
 module.exports = function (app) {
@@ -67,8 +10,8 @@ module.exports = function (app) {
     app.post("/create/city",
         [
             authJwt.verifyToken, authJwt.isA1,
-            checkDuplicateCity,
-            checkDuplicateCityID
+            checkCity.checkDuplicateCity,
+            checkCity.checkDuplicateCityID
         ],
         (req, res) => {
             const city = new City({
@@ -88,7 +31,7 @@ module.exports = function (app) {
 
     //xóa mã: truyền vào cityID.
     app.delete("/delete/city",
-        [authJwt.verifyToken, authJwt.isA1, checkCityExisted],
+        [authJwt.verifyToken, authJwt.isA1, checkCity.checkCityExisted],
         (req, res) => {
             City.findOneAndDelete({cityID: req.body.cityID})
                 .exec((err, city) => {

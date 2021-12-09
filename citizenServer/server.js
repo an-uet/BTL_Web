@@ -32,6 +32,7 @@ app.listen(PORT, () => {
 // connect database
 const db = require("./models");
 const Role = db.role;
+const User = db.user;
 
 mongoose
   .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
@@ -54,65 +55,68 @@ require("./routes/user.routes")(app);
 require("./routes/city.routes")(app);
 require("./routes/district.routes")(app);
 
-
+var currentTime = new Date();
 // connect success create collection in database
 function initial() {
-  // The estimatedDocumentCount() function is quick as it estimates the number of documents in the MongoDB collection. It is used for large collections because this function uses collection metadata rather than scanning the entire collection.
 
-  Role.estimatedDocumentCount((err, count) => {
-    if (!err && count === 0) {
-      new Role({
-        name: "A1",
-      }).save((err) => {
-        if (err) {
-          console.log("error", err);
-        }
 
-        console.log("added 'A1' to roles collection");
-      });
-
-      new Role({
-        name: "A2",
-      }).save((err) => {
-        if (err) {
-          console.log("A2", err);
-        }
-
-        console.log("added 'A2' to roles collection");
-      });
-
-      new Role({
-        name: "A3",
-      }).save((err) => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'A3' to roles collection");
-      });
-
-      new Role({
-        name: "B1",
-      }).save((err) => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'B1' to roles collection");
-      });
-
-      new Role({
-        name: "B2",
-      }).save((err) => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'B2' to roles collection");
-      });
-
-      
+//kiểm tra thời gian làm việc và cập nhập vào database
+  User.find({}).exec((err, users) => {
+    if (err) {
+      console.log("loi");
+      return;
     }
+
+    users.forEach(function (user) {
+      if (user.timeStart && user.timeFinish) {
+        var time1 = new Date(user.timeStart);
+        var time2 = new Date(user.timeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1
+        }
+        else {
+
+          user.active = 0;
+        }
+
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+          console.log("cap nhat thoi gian hoat dong thanh cong")
+        });
+      }
+    });
+  });
+
+
+  User.find({}).exec((err, users) => {
+    if (err) {
+      console.log("loi");
+      return;
+    }
+
+    users.forEach(function (user) {
+      if (user.active == 0) {
+        User.find({ createBy: user.username }).exec((err, arr) => {
+          if (err) {
+            console.log("loi");
+            return;
+          }
+          arr.forEach(function (temp) {
+            temp.active = 0;
+            temp.save(err => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+              console.log("thanh cong")
+            });
+          })
+        })
+      }
+    });
   });
 }
 
