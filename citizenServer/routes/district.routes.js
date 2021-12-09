@@ -2,8 +2,7 @@ const db = require("../models");
 const District = db.district;
 const User = db.user;
 const { authJwt } = require("../middlewares");
-const checkDistrict = require("../middlewares/checkDistrict")
-var globaldata = require('../controllers/globaldata');
+const checkDistrict = require("../middlewares/checkDistrict");
 
 //routes
 module.exports = function (app) {
@@ -16,19 +15,32 @@ module.exports = function (app) {
             checkDistrict.checkDuplicateDistrict
         ],
         (req, res) => {
-            const creator = new User(globaldata);
+            
             const district = new District({
                 districtID: req.body.districtID,
                 districtName: req.body.districtName
             });
-
             district.save((err, district) => {
                 if (err) {
                     res.status(500).send({ message: err });
                     return;
                 }
-                console.log(globaldata)
-                res.send({ message: "District was created successfully!" });
+
+                User.findById(req.userId).exec((err, user) => {
+                    if (err) {
+                      res.status(500).send({ message: err });
+                      return;
+                    }
+                    district.city = user.city
+                    district.save(err => {
+                        if (err) {
+                          res.status(500).send({ message: err });
+                          return;
+                        }
+                        res.send({ message: "District was created successfully!" });
+                      });
+                  })
+                
             })
         }
     );
@@ -49,5 +61,9 @@ module.exports = function (app) {
         }
     )
 
-    //sửa: 
+    app.put("/edit/district", 
+    [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted],
+    (req, res)
+
+    )
 }

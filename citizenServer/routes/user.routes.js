@@ -41,8 +41,8 @@ module.exports = function(app) {
     [
       authJwt.verifyToken, authJwt.isA2,
       verifySignUp.checkDuplicateUsername,
-      verifySignUp.checkRolesExisted
-      //authJwt.checkWorkingTime
+      verifySignUp.checkRolesExisted,
+      authJwt.checkTime2Work
     ],
     controller.signupA3
   );
@@ -62,7 +62,8 @@ module.exports = function(app) {
       //xác nhận là A3
       authJwt.isA3,
       verifySignUp.checkDuplicateUsername,
-      verifySignUp.checkRolesExisted
+      verifySignUp.checkRolesExisted,
+      authJwt.checkTime2Work
     ],
     controller.signupB1
   );
@@ -73,7 +74,8 @@ module.exports = function(app) {
     [
       authJwt.verifyToken, authJwt.isB1,
       verifySignUp.checkDuplicateUsername,
-      verifySignUp.checkRolesExisted
+      verifySignUp.checkRolesExisted,
+      authJwt.checkTime2Work
     ],
     controller.signupB2
   );

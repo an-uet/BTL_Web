@@ -186,17 +186,82 @@ isB2 = (req, res, next) => {
   });
 };
 
-  
-  
-  
+/*  
+checkTime2Work = (req,res,next) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    var currentTime = new Date();
+      if (user.timeStart && user.timeFinish) {
+        var time1 = new Date(user.timeStart);
+        var time2 = new Date(user.timeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1;
+          next();
+          return;
+        }
+        else {
+          user.active = 0
+        }
 
+        
+      }
+      if (user.active == 0) {
+        User.find({ createBy: user.username }).exec((err, arr) => {
+          if (err) {
+            console.log("loi");
+            return;
+          }
+          arr.forEach(function (temp) {
+            temp.active = 0;
+            temp.save(err => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+              console.log("thanh cong")
+            });
+          })
+        })
+      }
+   
+      user.save(err => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
+    
+    res.status(403).send({ message: "time up!" });
+    return;
+  })
+}
+*/
+
+checkTime2Work = (req, res, next) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    if(user.active == 1) {
+      next();
+      return;
+    }
+    res.status(403).send({ message: "time up!" });
+    return;
+  })
+}
 const authJwt = {
   verifyToken,
   isA1,
   isA2,
   isA3,
   isB1,
-  isB2
+  isB2,
+  checkTime2Work
 };
 module.exports = authJwt;
 

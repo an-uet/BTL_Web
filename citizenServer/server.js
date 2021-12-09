@@ -55,13 +55,11 @@ require("./routes/user.routes")(app);
 require("./routes/city.routes")(app);
 require("./routes/district.routes")(app);
 
-var currentTime = new Date();
 // connect success create collection in database
 function initial() {
 
-
 //kiểm tra thời gian làm việc và cập nhập vào database
-  User.find({}).exec((err, users) => {
+ /* User.find({}).exec((err, users) => {
     if (err) {
       console.log("loi");
       return;
@@ -117,7 +115,7 @@ function initial() {
         })
       }
     });
-  });
+  });*/
 }
 
 

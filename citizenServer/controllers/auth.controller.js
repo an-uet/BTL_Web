@@ -1,6 +1,4 @@
 const config = require("../config/auth.config")
-
-var globaldata = require('./globaldata');
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
@@ -55,11 +53,9 @@ exports.signupA1 = (req, res) => {
 
 //signup user: A2
 exports.signupA2 = (req, res) => {
-  const creator = new User(globaldata);
   const user = new User({
     username: req.body.username,
     password: bcrypt.hashSync(req.body.password, 8),
-    createBy: creator.username,
     timeStart: req.body.timeStart,
     timeFinish: req.body.timeFinish
   });
@@ -81,6 +77,16 @@ exports.signupA2 = (req, res) => {
         user.active = 0
       }
     }
+
+    User.findById(req.userId).exec((err, temp) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      
+      user.createBy = temp.username
+    })
+
     Role.findOne({ name: "A2" }, (err, role) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -112,175 +118,244 @@ exports.signupA2 = (req, res) => {
 
 //signup user: A3
 exports.signupA3 = (req, res) => {
-  const creator = new User(globaldata);
-  if (creator.active == 1) {
-    const user = new User({
-      username: req.body.username,
-      password: bcrypt.hashSync(req.body.password, 8),
-      createBy: creator.username,
-      timeStart: req.body.timeStart,
-      timeFinish: req.body.timeFinish
-    });
 
-    user.save((err, user) => {
+  const user = new User({
+    username: req.body.username,
+    password: bcrypt.hashSync(req.body.password, 8),
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
+  });
+
+  user.save((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    var currentTime = new Date();
+    if (req.body.timeStart && req.body.timeFinish) {
+      var time1 = new Date(req.body.timeStart);
+      var time2 = new Date(req.body.timeFinish);
+      if (time1 <= currentTime && currentTime <= time2) {
+        user.active = 1
+      }
+      else {
+        user.active = 0
+      }
+    }
+
+    User.findById(req.userId).exec((err, temp) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
-      var currentTime = new Date();
-      if (req.body.timeStart && req.body.timeFinish) {
-        var time1 = new Date(req.body.timeStart);
-        var time2 = new Date(req.body.timeFinish);
-        if (time1 <= currentTime && currentTime <= time2) {
-          user.active = 1
-        }
-        else {
-          user.active = 0
-        }
+      
+      user.createBy = temp.username
+    })
+
+    Role.findOne({ name: "A3" }, (err, role) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
       }
 
-      Role.findOne({ name: "A3" }, (err, role) => {
+      user.roles = [role._id];
+      District.findOne({ districtID: req.body.username }, (err, district) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-
-        user.roles = [role._id];
-        District.findOne({ districtID: req.body.username }, (err, district) => {
+        user.district = district._id;
+        user.save(err => {
           if (err) {
             res.status(500).send({ message: err });
             return;
           }
-          user.district = district._id;
-          user.save(err => {
-            if (err) {
-              res.status(500).send({ message: err });
-              return;
-            }
-            res.send({ message: "User was registered successfully!" });
-          });
-
+         res.send({ message: "User was registered successfully!" });
         });
+
       });
     });
-  }
+  });
 
-  else {
-    res.send({ message: "time up!" });
-  }
+
 };
 
 
 //signup user: B1
 exports.signupB1 = (req, res) => {
-  const creator = new User(globaldata);
-  if (creator.active = 1) {
-    const user = new User({
-      username: req.body.username,
-      password: bcrypt.hashSync(req.body.password, 8),
-      createBy: creator.username,
-      timeStart: req.body.timeStart,
-      timeFinish: req.body.timeFinish
-    });
+  const user = new User({
+    username: req.body.username,
+    password: bcrypt.hashSync(req.body.password, 8),
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
+  });
 
-    user.save((err, user) => {
+  user.save((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    var currentTime = new Date();
+    if (req.body.timeStart && req.body.timeFinish) {
+      var time1 = new Date(req.body.timeStart);
+      var time2 = new Date(req.body.timeFinish);
+      if (time1 <= currentTime && currentTime <= time2) {
+        user.active = 1
+      }
+      else {
+        user.active = 0
+      }
+    }
+
+    User.findById(req.userId).exec((err, temp) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
+      
+      user.createBy = temp.username
+    })
 
-      var currentTime = new Date();
-      if (req.body.timeStart && req.body.timeFinish) {
-        var time1 = new Date(req.body.timeStart);
-        var time2 = new Date(req.body.timeFinish);
-        if (time1 <= currentTime && currentTime <= time2) {
-          user.active = 1
-        }
-        else {
-          user.active = 0
-        }
+    Role.findOne({ name: "B1" }, (err, role) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
       }
-      Role.findOne({ name: "B1" }, (err, role) => {
+      user.roles = [role._id];
+      user.save(err => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-        user.roles = [role._id];
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
 
-          res.send({ message: "User was registered successfully!" });
-        });
+        res.send({ message: "User was registered successfully!" });
       });
-
     });
-  }
-  else {
-    res.send({ message: "time up!" });
-  }
+
+  });
 
 };
 
 //signup user: B2
 exports.signupB2 = (req, res) => {
-  const creator = new User(globaldata);
-  if (creator.active = 1) {
-    const user = new User({
-      username: req.body.username,
-      password: bcrypt.hashSync(req.body.password, 8),
-      createBy: creator.username,
-      timeStart: req.body.timeStart,
-      timeFinish: req.body.timeFinish
-    });
+  const user = new User({
+    username: req.body.username,
+    password: bcrypt.hashSync(req.body.password, 8),
+    timeStart: req.body.timeStart,
+    timeFinish: req.body.timeFinish
+  });
 
-    user.save((err, user) => {
+  user.save((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    var currentTime = new Date();
+    if (req.body.timeStart && req.body.timeFinish) {
+      var time1 = new Date(req.body.timeStart);
+      var time2 = new Date(req.body.timeFinish);
+      if (time1 <= currentTime && currentTime <= time2) {
+        user.active = 1
+      }
+      else {
+        user.active = 0
+      }
+    }
+
+    User.findById(req.userId).exec((err, temp) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      
+      user.createBy = temp.username
+    })
+
+    Role.findOne({ name: "B2" }, (err, role) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
 
-      var currentTime = new Date();
-      if (req.body.timeStart && req.body.timeFinish) {
-        var time1 = new Date(req.body.timeStart);
-        var time2 = new Date(req.body.timeFinish);
-        if (time1 <= currentTime && currentTime <= time2) {
-          user.active = 1
-        }
-        else {
-          user.active = 0
-        }
-      }
-
-      Role.findOne({ name: "B2" }, (err, role) => {
+      user.roles = [role._id];
+      user.save(err => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
+        res.send({ message: "User was registered successfully!" });
+      });
+    });
 
-        user.roles = [role._id];
+  });
+};
+
+//cap nhat database truong active.
+function updateActiveField() {
+  var currentTime = new Date();
+  User.find({}).exec((err, users) => {
+    if (err) {
+      console.log("loi");
+      return;
+    }
+
+    users.forEach(function (user) {
+      if (user.timeStart && user.timeFinish) {
+        var time1 = new Date(user.timeStart);
+        var time2 = new Date(user.timeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1
+        }
+        else {
+
+          user.active = 0;
+        }
+
         user.save(err => {
           if (err) {
             res.status(500).send({ message: err });
             return;
           }
-          res.send({ message: "User was registered successfully!" });
+          console.log("cap nhat thoi gian hoat dong thanh cong")
         });
-      });
-
+      }
     });
-  }
-  else {
-    res.send({ message: "time up!" });
-  }
-
-};
+  });
 
 
+  User.find({}).exec((err, users) => {
+    if (err) {
+      console.log("loi");
+      return;
+    }
+
+    users.forEach(function (user) {
+      if (user.active == 0) {
+        User.find({ createBy: user.username }).exec((err, arr) => {
+          if (err) {
+            console.log("loi");
+            return;
+          }
+          arr.forEach(function (temp) {
+            temp.active = 0;
+            temp.save(err => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+              console.log("thanh cong")
+            });
+          })
+        })
+      }
+    });
+  });
+}
 //signin
 exports.signin = (req, res) => {
+  updateActiveField();
   User.findOne({
     username: req.body.username
   })
@@ -344,8 +419,6 @@ exports.signin = (req, res) => {
 
 
       });
-      globaldata = user;
-      console.log(globaldata)
     });
 };
 
