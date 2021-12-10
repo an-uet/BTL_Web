@@ -84,61 +84,34 @@ exports.getB2 = (req, res) => {
   });
 };
 
-exports.editUser = (req, res) => {
-  User.findOneAndUpdate({ username: req.body.username }, {
-    $set: req.body
-  }, { new: true })
-    .exec((err, user) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-      res.send({ message: "User was edited" });
 
-    })
-}
 
-//tìm tài khoản, xác nhận nó có phải là tài khoản có quyền xóa không. 
-//user_role: role: A2,A3,B1,B2
-//name: username
-/*
-function deleteUser(user_role, name) {
-  User.findOne({ username: name }).exec((err, user) => {
+// function để xóa hết các tài khoản liên quan.
+function deleteAllUser(regax){
+  User.deleteMany({ username: regax })
+  .exec((err, users) => {
     if (err) {
-      res.status(500).send({ message: err });
+      console.log(err)
       return;
     }
+    console.log("delete all user were created");
 
-    Role.find(
-      {
-        _id: { $in: user.roles }
-      },
-      (err, roles) => {
-        if (err) {
-          return;
-        }
-
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === user_role) {
-            next();
-            return;
-          }
-        }
-        return;
-      }
-    );
-  });
-
+  })
 }
-*/
+
+
 exports.deleteA2 = (req, res) => {
-  //xác định tài khoản cần xóa là của A2
+  //pattern để xóa tất cả user tạo bởi 1 tài khoản A2.
+  var re = "^";
+  var result = re.concat(req.body.username)
+  var regax = new RegExp(result,"g")
+
+ //xác định tài khoản cần xóa là của A2
   User.findOne({ username: req.body.username }).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
     }
-
     Role.find(
       {
         _id: { $in: user.roles }
@@ -152,35 +125,39 @@ exports.deleteA2 = (req, res) => {
         for (let i = 0; i < roles.length; i++) {
           if (roles[i].name === "A2") {
 
-            //nếu tài khoản tìm được là A2 --> xóa.
             User.findOneAndDelete({ username: req.body.username })
               .exec((err, user) => {
                 if (err) {
                   res.status(500).send({ message: err });
                   return;
                 }
+                deleteAllUser(regax);
                 res.send({ message: "User was deleted" });
               })
             return;
           }
         }
-
         res.status(403).send({ message: "you can not delete this user!" });
         return;
       }
     );
+
   });
 
 }
 
 exports.deleteA3 = (req, res) => {
-  //xác định tài khoản cần xóa là của A3
+  //pattern để xóa tất cả user tạo bởi 1 tài khoản A3.
+  var re = "^";
+  var result = re.concat(req.body.username)
+  var regax = new RegExp(result,"g")
+
+ //xác định tài khoản cần xóa là của A3
   User.findOne({ username: req.body.username }).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
     }
-
     Role.find(
       {
         _id: { $in: user.roles }
@@ -193,14 +170,15 @@ exports.deleteA3 = (req, res) => {
 
         for (let i = 0; i < roles.length; i++) {
           if (roles[i].name === "A3") {
+
             User.findOneAndDelete({ username: req.body.username })
               .exec((err, user) => {
                 if (err) {
                   res.status(500).send({ message: err });
                   return;
                 }
+                deleteAllUser(regax);
                 res.send({ message: "User was deleted" });
-
               })
             return;
           }
@@ -209,19 +187,24 @@ exports.deleteA3 = (req, res) => {
         return;
       }
     );
+
   });
 
 }
 
 
 exports.deleteB1 = (req, res) => {
-  //xác định tài khoản cần xóa là của B1
+  //pattern để xóa tất cả user tạo bởi 1 tài khoản A3.
+  var re = "^";
+  var result = re.concat(req.body.username)
+  var regax = new RegExp(result,"g")
+
+ //xác định tài khoản cần xóa là của A3
   User.findOne({ username: req.body.username }).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
     }
-
     Role.find(
       {
         _id: { $in: user.roles }
@@ -234,36 +217,41 @@ exports.deleteB1 = (req, res) => {
 
         for (let i = 0; i < roles.length; i++) {
           if (roles[i].name === "B1") {
+
             User.findOneAndDelete({ username: req.body.username })
               .exec((err, user) => {
                 if (err) {
                   res.status(500).send({ message: err });
                   return;
                 }
+                deleteAllUser(regax);
                 res.send({ message: "User was deleted" });
-
               })
             return;
           }
         }
-
         res.status(403).send({ message: "you can not delete this user!" });
         return;
       }
     );
+
   });
 
 }
 
 
 exports.deleteB2 = (req, res) => {
-  //xác định tài khoản cần xóa là của B2
+  //pattern để xóa tất cả user tạo bởi 1 tài khoản A3.
+  var re = "^";
+  var result = re.concat(req.body.username)
+  var regax = new RegExp(result,"g")
+
+ //xác định tài khoản cần xóa là của A3
   User.findOne({ username: req.body.username }).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
     }
-
     Role.find(
       {
         _id: { $in: user.roles }
@@ -276,26 +264,42 @@ exports.deleteB2 = (req, res) => {
 
         for (let i = 0; i < roles.length; i++) {
           if (roles[i].name === "B2") {
+
             User.findOneAndDelete({ username: req.body.username })
               .exec((err, user) => {
                 if (err) {
                   res.status(500).send({ message: err });
                   return;
                 }
+                deleteAllUser(regax);
                 res.send({ message: "User was deleted" });
-
               })
             return;
           }
         }
-
         res.status(403).send({ message: "you can not delete this user!" });
         return;
       }
     );
+
   });
 }
 
+
+//edit user
+exports.editUser = (req, res) => {
+  User.findOneAndUpdate({ username: req.body.username }, {
+    $set: req.body
+  }, { new: true })
+    .exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      res.send({ message: "User was edited" });
+
+    })
+}
 
 exports.putA2 = (req, res) => {
 

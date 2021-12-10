@@ -22,6 +22,8 @@ module.exports = function (app) {
 
     )
 
+
+    //chưa set quyền.
     app.get("/citizen",[authJwt.verifyToken], citizenController.getCitizen)
 
 

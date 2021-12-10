@@ -308,6 +308,8 @@ exports.signupB2 = (req, res) => {
   });
 };
 
+
+
 //cap nhat database truong active.
 function updateActiveField() {
   var currentTime = new Date();
