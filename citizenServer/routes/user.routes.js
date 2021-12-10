@@ -2,15 +2,15 @@ const { authJwt } = require("../middlewares");
 const userController = require("../controllers/user.controller");
 const controller = require("../controllers/auth.controller");
 const { verifySignUp } = require("../middlewares");
-module.exports = function(app) {
-  app.use(function(req, res, next) {
+module.exports = function (app) {
+  app.use(function (req, res, next) {
     res.header(
       "Access-Control-Allow-Headers",
       "x-access-token, Origin, Content-Type, Accept"
     );
     next();
   });
-  
+
 
 
   app.get(
@@ -24,9 +24,15 @@ module.exports = function(app) {
     userController.getA3
   );
 
+  app.post("/A1", [
+    verifySignUp.checkDuplicateUsername,
+    verifySignUp.checkRolesExisted],
+    controller.signupA1
+  )
+
 
   //A1 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A2
-  app.post("/create/A2",
+  app.post("/A2",
     [
       authJwt.verifyToken, authJwt.isA1,
       verifySignUp.checkDuplicateUsername,
@@ -35,9 +41,19 @@ module.exports = function(app) {
     controller.signupA2
   );
 
-  
+  app.delete("/A2",
+    [authJwt.verifyToken, authJwt.isA1],
+    userController.deleteA2
+  )
+
+  app.put("/A2",
+  [authJwt.verifyToken, authJwt.isA1],
+    userController.editA2
+  )
+
+
   //A2 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A3
-  app.post("/create/A3",
+  app.post("/A3",
     [
       authJwt.verifyToken, authJwt.isA2,
       verifySignUp.checkDuplicateUsername,
@@ -47,18 +63,16 @@ module.exports = function(app) {
     controller.signupA3
   );
 
-  app.post("/create/A1", [
-    verifySignUp.checkDuplicateUsername,
-    verifySignUp.checkRolesExisted],
-    controller.signupA1
-    )
+  app.delete("/A3",
+    [authJwt.verifyToken, authJwt.isA2],
+    userController.deleteA3
+  )
 
-  
   //A3 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B1
-  app.post("/create/B1",
+  app.post("/B1",
     [
       //xác nhận đăng nhập
-      authJwt.verifyToken, 
+      authJwt.verifyToken,
       //xác nhận là A3
       authJwt.isA3,
       verifySignUp.checkDuplicateUsername,
@@ -68,9 +82,14 @@ module.exports = function(app) {
     controller.signupB1
   );
 
-  
+  app.delete("/B1",
+    [authJwt.verifyToken, authJwt.isA3],
+    userController.deleteB1
+  )
+
+
   //B1 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B2
-  app.post("/create/B2",
+  app.post("/B2",
     [
       authJwt.verifyToken, authJwt.isB1,
       verifySignUp.checkDuplicateUsername,
@@ -79,6 +98,11 @@ module.exports = function(app) {
     ],
     controller.signupB2
   );
+
+  app.delete("/B2",
+    [authJwt.verifyToken, authJwt.isB1],
+    userController.deleteB2
+  )
 
 
 

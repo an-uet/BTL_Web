@@ -13,6 +13,15 @@ var villageSchema = new Schema({
     ward: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'District'
+    },
+    district: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'District'
+    },
+    city: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'City'
+
     }
 });
 

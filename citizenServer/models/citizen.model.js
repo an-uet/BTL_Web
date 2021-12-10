@@ -26,34 +26,30 @@ var citizenSchema = new Schema({
         required: true
 
     },
-    timeID: {
+    village: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Time'
-
-    },
-    villageID: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'Village'
 
     },
-    wardID: {
+    ward: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'Ward'
 
     },
-    districtID: {
+    district: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'District'
 
     },
-    cityID: {
+    city: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'City'
 
+    },
+    address: {
+        type: String,
     }
 })
+
+var Citizen = mongoose.model('Citizen', citizenSchema);
+module.exports = Citizen;

@@ -8,7 +8,7 @@ const checkDistrict = require("../middlewares/checkDistrict");
 module.exports = function (app) {
 
     //cấp mã.
-    app.post("/create/district",
+    app.post("/district",
         [
             authJwt.verifyToken, authJwt.isA2,
             checkDistrict.checkDuplicateDistrictID,
@@ -45,8 +45,8 @@ module.exports = function (app) {
         }
     );
 
-    //xóa mã: truyền vào disctrictID.
-    app.delete("/delete/district",
+    //xóa mã: truyền vào disctrictID.. xuw lis them khi xao ma thi xoa tai khoan khong.
+    app.delete("/district",
         [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted],
         (req, res) => {
             District.findOneAndDelete({districtID: req.body.districtID})
@@ -61,9 +61,20 @@ module.exports = function (app) {
         }
     )
 
-    app.put("/edit/district", 
+    app.put("/district", 
     [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted],
-    (req, res)
+    (req, res) => {
+        District.findOneAndUpdate({districtID: req.body.districtID}, {
+            $set: req.body
+        }, { new: true })
+        .exec((err, district) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.send({ message: "district was edited" });
 
+        })
+    }
     )
 }

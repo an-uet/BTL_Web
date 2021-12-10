@@ -7,7 +7,7 @@ const checkCity = require("../middlewares/checkCity")
 module.exports = function (app) {
 
     //cấp mã.
-    app.post("/create/city",
+    app.post("/city",
         [
             authJwt.verifyToken, authJwt.isA1,
             checkCity.checkDuplicateCity,
@@ -30,7 +30,7 @@ module.exports = function (app) {
     );
 
     //xóa mã: truyền vào cityID.
-    app.delete("/delete/city",
+    app.delete("/city",
         [authJwt.verifyToken, authJwt.isA1, checkCity.checkCityExisted],
         (req, res) => {
             City.findOneAndDelete({cityID: req.body.cityID})
@@ -46,4 +46,21 @@ module.exports = function (app) {
     )
 
     //sửa: 
+
+    app.put("/city", 
+    [authJwt.verifyToken, authJwt.isA2, checkCity.checkCityExisted],
+    (req, res) => {
+       City.findOneAndUpdate({cityID: req.body.cityID}, {
+            $set: req.body
+        }, { new: true })
+        .exec((err, city) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.send({ message: "City was edited" });
+
+        })
+    }
+    )
 }

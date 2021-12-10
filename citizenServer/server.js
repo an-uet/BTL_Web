@@ -54,6 +54,9 @@ mongoose
 require("./routes/user.routes")(app);
 require("./routes/city.routes")(app);
 require("./routes/district.routes")(app);
+require("./routes/ward.routes")(app);
+require("./routes/village.routes")(app);
+require("./routes/citizen.routes")(app);
 
 // connect success create collection in database
 function initial() {

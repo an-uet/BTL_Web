@@ -10,6 +10,7 @@ db.city = require("./city.model")
 db.district = require("./district.model")
 db.ward = require("./ward.model")
 db.village = require("./village.model")
+db.citizen = require("./citizen.model")
 
 db.ROLES = ["A1", "A2", "A3", "B1", 'B2'];
 

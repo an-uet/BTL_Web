@@ -223,13 +223,21 @@ exports.signupB1 = (req, res) => {
         return;
       }
       user.roles = [role._id];
-      user.save(err => {
+
+      Ward.findOne({ wardID: req.body.username }, (err, ward) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
+        user.ward = ward._id;
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+         res.send({ message: "User was registered successfully!" });
+        });
 
-        res.send({ message: "User was registered successfully!" });
       });
     });
 
@@ -280,15 +288,23 @@ exports.signupB2 = (req, res) => {
       }
 
       user.roles = [role._id];
-      user.save(err => {
+
+      Village.findOne({ villageID: req.body.username }, (err, village) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-        res.send({ message: "User was registered successfully!" });
+        user.village = village._id;
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+         res.send({ message: "User was registered successfully!" });
+        });
+
       });
     });
-
   });
 };
 
@@ -353,6 +369,8 @@ function updateActiveField() {
     });
   });
 }
+
+
 //signin
 exports.signin = (req, res) => {
   updateActiveField();
@@ -362,6 +380,7 @@ exports.signin = (req, res) => {
     .populate("roles")
     .populate("city")
     .populate("district")
+    .populate("ward")
     .exec((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -396,11 +415,15 @@ exports.signin = (req, res) => {
       }
       var city_name = ""
       var district_name = ""
+      var ward_name = ""
       if (user.city) {
         city_name = user.city.cityName
       }
       if (user.district) {
         district_name = user.district.districtName
+      }
+      if(user.ward) {
+        ward_name = user.ward.wardName
       }
 
       res.status(200).send({
@@ -412,7 +435,7 @@ exports.signin = (req, res) => {
         timeFinish: user.timeFinish,
         city: city_name,
         district: district_name,
-        ward: "",
+        ward: ward_name,
         village: "",
         accessToken: token,
         isActive: user.active,
