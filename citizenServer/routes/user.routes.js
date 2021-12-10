@@ -12,18 +12,6 @@ module.exports = function (app) {
   });
 
 
-
-  app.get(
-    "/api/test/A2",
-    [authJwt.verifyToken, authJwt.isA1],
-    userController.getA2
-  );
-
-  app.get("/api/test/A3",
-    [authJwt.verifyToken, authJwt.isA2],
-    userController.getA3
-  );
-
   app.post("/A1", [
     verifySignUp.checkDuplicateUsername,
     verifySignUp.checkRolesExisted],
@@ -48,8 +36,14 @@ module.exports = function (app) {
 
   app.put("/A2",
   [authJwt.verifyToken, authJwt.isA1],
-    userController.editA2
+    userController.putA2
   )
+
+  app.get(
+    "/A2",
+    [authJwt.verifyToken, authJwt.isA1],
+    userController.getA2
+  );
 
 
   //A2 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A3
@@ -67,6 +61,11 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isA2],
     userController.deleteA3
   )
+
+  app.get("/A3",
+  [authJwt.verifyToken, authJwt.isA2],
+  userController.getA3
+);
 
   //A3 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B1
   app.post("/B1",
@@ -87,6 +86,11 @@ module.exports = function (app) {
     userController.deleteB1
   )
 
+  app.get("/B1",
+  [authJwt.verifyToken, authJwt.isA3],
+  userController.getB1
+);
+
 
   //B1 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B2
   app.post("/B2",
@@ -104,8 +108,13 @@ module.exports = function (app) {
     userController.deleteB2
   )
 
+  app.get("/B2",
+  [authJwt.verifyToken, authJwt.isB1],
+  userController.getB2
+);
+
 
 
   //signin 
-  app.post("/signin", controller.signin);
+app.post("/signin", controller.signin);
 };

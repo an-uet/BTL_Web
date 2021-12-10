@@ -23,6 +23,8 @@ module.exports = function (app) {
 
     )
 
+    app.get("/citizen",[authJwt.verifyToken], citizenController.getCitizen)
+
 
 
 

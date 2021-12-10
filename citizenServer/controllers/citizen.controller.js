@@ -64,3 +64,19 @@ exports.deleteCitizen = (req, res) => {
 
         })
 }
+
+exports.getCitizen = (req, res) => {
+    Citizen.find()
+    .populate("village")
+    .populate("city")
+    .populate("district")
+    .populate("ward")
+    .exec((err, citizens) =>{
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      res.status(200).send(citizens);
+
+    })
+}
