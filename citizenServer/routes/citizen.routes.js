@@ -15,7 +15,6 @@ module.exports = function (app) {
 
     );
 
-
     //xóa mã: truyền vào citizenID
     app.delete("/citizen",
         [authJwt.verifyToken, authJwt.isB2, checkCitizen.checkCitizenExisted],
