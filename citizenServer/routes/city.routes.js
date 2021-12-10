@@ -1,7 +1,6 @@
-const db = require("../models");
-const City = db.city;
 const { authJwt } = require("../middlewares");
 const checkCity = require("../middlewares/checkCity")
+const cityController = require("../controllers/city.controller")
 
 //routes
 module.exports = function (app) {
@@ -13,54 +12,28 @@ module.exports = function (app) {
             checkCity.checkDuplicateCity,
             checkCity.checkDuplicateCityID
         ],
-        (req, res) => {
-            const city = new City({
-                cityID: req.body.cityID,
-                cityName: req.body.cityName
-            });
+        cityController.postCity
 
-            city.save((err, city) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-                res.send({ message: "City was created successfully!" });
-            })
-        }
     );
 
     //xóa mã: truyền vào cityID.
     app.delete("/city",
-        [authJwt.verifyToken, authJwt.isA1, checkCity.checkCityExisted],
-        (req, res) => {
-            City.findOneAndDelete({cityID: req.body.cityID})
-                .exec((err, city) => {
-                    if (err) {
-                        res.status(500).send({ message: err });
-                        return;
-                    }
-                    res.send({ message: "City was deleted" });
-
-                })
-        }
+        [
+            authJwt.verifyToken, 
+            authJwt.isA1, 
+            checkCity.checkCityExisted
+        ],
+        cityController.deleteCity
     )
 
     //sửa: 
 
-    app.put("/city", 
-    [authJwt.verifyToken, authJwt.isA2, checkCity.checkCityExisted],
-    (req, res) => {
-       City.findOneAndUpdate({cityID: req.body.cityID}, {
-            $set: req.body
-        }, { new: true })
-        .exec((err, city) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.send({ message: "City was edited" });
-
-        })
-    }
+    app.put("/city",
+        [
+            authJwt.verifyToken, 
+            authJwt.isA2, 
+            checkCity.checkCityExisted
+        ],
+        cityController.putCity
     )
 }
