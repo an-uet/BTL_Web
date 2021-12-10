@@ -7,11 +7,15 @@ exports.postCitizen = (req, res) => {
 
     const citizen = new Citizen({
         citizenID: req.body.citizenID,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
+        name: req.body.name,
         dateOfBirth: req.body.dateOfBirth,
         gender: req.body.gender,
-        address: req.body.address
+        address: req.body.address,
+        nativeVillage: req.body.nativeVillage,
+        religion: req.body.religion,
+        job: req.body.job
+
+
     });
     citizen.save((err, citizen) => {
         if (err) {

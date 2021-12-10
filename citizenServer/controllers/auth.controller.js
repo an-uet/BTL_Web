@@ -381,6 +381,7 @@ exports.signin = (req, res) => {
     .populate("city")
     .populate("district")
     .populate("ward")
+    .populate("village")
     .exec((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -416,6 +417,7 @@ exports.signin = (req, res) => {
       var city_name = ""
       var district_name = ""
       var ward_name = ""
+      var village_name = ""
       if (user.city) {
         city_name = user.city.cityName
       }
@@ -425,7 +427,11 @@ exports.signin = (req, res) => {
       if(user.ward) {
         ward_name = user.ward.wardName
       }
+      if(user.village) {
+        village_name = user.village.villageName
+      }
 
+      console.log(village_name)
       res.status(200).send({
         id: user._id,
         username: user.username,
@@ -436,11 +442,9 @@ exports.signin = (req, res) => {
         city: city_name,
         district: district_name,
         ward: ward_name,
-        village: "",
+        village: village_name,
         accessToken: token,
         isActive: user.active,
-
-
       });
     });
 };

@@ -6,15 +6,14 @@ var citizenSchema = new Schema({
         type: String,
         required: true
     },
-    firstname: {
+    name: {
         type: String,
         required: true
 
     },
-    lastname: {
+    nativeVillage: {
         type: String,
         required: true
-
     },
     dateOfBirth: {
         type: Date,
@@ -48,6 +47,13 @@ var citizenSchema = new Schema({
     },
     address: {
         type: String,
+    },
+    religion: {
+        type: String,
+        required: true
+    },
+    job: {
+        type: String
     }
 })
 
