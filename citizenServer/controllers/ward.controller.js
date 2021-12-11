@@ -2,6 +2,10 @@ const db = require("../models");
 const Ward = db.ward;
 const User = db.user;
 const District = db.district;
+const locationController = require('./location.controller');
+const userController = require('./user.controller');
+const citizenController = require('./citizen.controller')
+
 
 exports.postWard = (req, res) => {
 
@@ -42,15 +46,22 @@ exports.postWard = (req, res) => {
 
     })
 }
-
 exports.deleteWard = (req, res) => {
+    var re = "^";
+    var result = re.concat(req.body.wardID)
+    var regax = new RegExp(result, "g")
+
     Ward.findOneAndDelete({ wardID: req.body.wardID })
         .exec((err, ward) => {
             if (err) {
                 res.status(500).send({ message: err });
                 return;
             }
-            res.send({ message: "ward was deleted" });
+            citizenController.deleteCitizensOfWard(ward._id)
 
         })
+
+        locationController.deleteVillages(regax);
+        userController.deleteUsers(regax);
+        res.send({ message: "ward was deleted" });
 }

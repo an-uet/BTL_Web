@@ -29,10 +29,7 @@ module.exports = function (app) {
     controller.signupA2
   );
 
-  app.delete("/A2",
-    [authJwt.verifyToken, authJwt.isA1],
-    userController.deleteA2
-  )
+ 
 
   app.put("/A2",
   [authJwt.verifyToken, authJwt.isA1],
@@ -57,10 +54,7 @@ module.exports = function (app) {
     controller.signupA3
   );
 
-  app.delete("/A3",
-    [authJwt.verifyToken, authJwt.isA2],
-    userController.deleteA3
-  )
+  
 
   app.get("/A3",
   [authJwt.verifyToken, authJwt.isA2],
@@ -81,10 +75,7 @@ module.exports = function (app) {
     controller.signupB1
   );
 
-  app.delete("/B1",
-    [authJwt.verifyToken, authJwt.isA3],
-    userController.deleteB1
-  )
+  
 
   app.get("/B1",
   [authJwt.verifyToken, authJwt.isA3],
@@ -103,10 +94,6 @@ module.exports = function (app) {
     controller.signupB2
   );
 
-  app.delete("/B2",
-    [authJwt.verifyToken, authJwt.isB1],
-    userController.deleteB2
-  )
 
   app.get("/B2",
   [authJwt.verifyToken, authJwt.isB1],

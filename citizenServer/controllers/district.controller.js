@@ -1,6 +1,9 @@
 const db = require("../models");
 const District = db.district;
 const User = db.user;
+const locationController = require('./location.controller');
+const userController = require('./user.controller');
+const citizenController = require('./citizen.controller')
 
 exports.postDistrict = (req, res) => {
 
@@ -33,15 +36,24 @@ exports.postDistrict = (req, res) => {
 }
 
 exports.deleteDistrict = (req, res) => {
+    var re = "^";
+    var result = re.concat(req.body.districtID)
+    var regax = new RegExp(result, "g")
+
     District.findOneAndDelete({ districtID: req.body.districtID })
         .exec((err, district) => {
             if (err) {
                 res.status(500).send({ message: err });
                 return;
             }
-            res.send({ message: "district was deleted" });
-
+            citizenController.deleteCitizensOfDistrict(district._id)
         })
+
+        locationController.deleteVillages(regax);
+        locationController.deleteWards(regax);
+        userController.deleteUsers(regax);
+
+        res.send({ message: "district was deleted" });
 }
 
 exports.putDistrict = (req, res) => {

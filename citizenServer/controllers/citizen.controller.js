@@ -1,7 +1,9 @@
+const { city } = require("../models");
 const db = require("../models");
 const User = db.user;
 const Village = db.village;
 const Citizen = db.citizen;
+const City = db.city;
 
 exports.postCitizen = (req, res) => {
 
@@ -53,9 +55,10 @@ exports.postCitizen = (req, res) => {
     })
 }
 
+// xóa một cư dân.
 exports.deleteCitizen = (req, res) => {
     Citizen.findOneAndDelete({ citizenID: req.body.citizenID })
-        .exec((err, ward) => {
+        .exec((err, citizen) => {
             if (err) {
                 res.status(500).send({ message: err });
                 return;
@@ -64,6 +67,55 @@ exports.deleteCitizen = (req, res) => {
 
         })
 }
+
+//xoa cua dan cua mot tinh
+exports.deleteCitizensOfCity = (_id) => {
+        Citizen.deleteMany({ city: _id })
+        .exec((err, citizens) => {
+            if (err) {
+                console.log(err)
+                return;
+            }
+            console.log("delete all citizens of this city");
+        })
+  }
+
+  //xoa cua dan cua mot huyee+n
+exports.deleteCitizensOfDistrict = (_id) => {
+    Citizen.deleteMany({ district: _id })
+    .exec((err, citizens) => {
+        if (err) {
+            console.log(err)
+            return;
+        }
+        console.log("delete all citizens of this district");
+    })
+}
+
+//xoa cua dan cua mot xa
+exports.deleteCitizensOfWard = (_id) => {
+    Citizen.deleteMany({ ward: _id })
+    .exec((err, citizens) => {
+        if (err) {
+            console.log(err)
+            return;
+        }
+        console.log("delete all citizens of this ward");
+    })
+}
+
+//xoa cua dan cua mot lang
+exports.deleteCitizensOfVillage = (_id) => {
+    Citizen.deleteMany({village: _id })
+    .exec((err, citizens) => {
+        if (err) {
+            console.log(err)
+            return;
+        }
+        console.log("delete all citizens of this village");
+    })
+}
+
 
 exports.getCitizen = (req, res) => {
     Citizen.find()
