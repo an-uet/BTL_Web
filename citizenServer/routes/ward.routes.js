@@ -17,11 +17,14 @@ module.exports = function (app) {
 
     //xóa mã: truyền vào wardID.// xu li khi xoa ma thi xoas tai khoan hay khong?
     app.delete("/ward",
-        [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExisted],
+        [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExistedByWardID],
         wardController.deleteWard
 
     )
-
+    app.put("/district", 
+    [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExisted, checkWard.checkDuplicateWardID],
+    wardController.putWard
+    )
 
 
 

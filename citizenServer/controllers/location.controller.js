@@ -7,8 +7,8 @@ const User = db.user
 
 
 //xoa het huyện/ quận liên quan
-function deleteDistricts(regax){
-  District.deleteMany({ districtID: regax })
+function deleteDistricts(regex){
+  District.deleteMany({ districtID: regex })
   .exec((err, districts) => {
     if (err) {
       console.log(err)
@@ -20,8 +20,8 @@ function deleteDistricts(regax){
 }
 
 //xoa het xa/phuong lien quan
-function deleteWards(regax){
-  Ward.deleteMany({ wardID: regax })
+function deleteWards(regex){
+  Ward.deleteMany({ wardID: regex })
   .exec((err, wards) => {
     if (err) {
       console.log(err)
@@ -34,8 +34,8 @@ function deleteWards(regax){
 
 //xoa het lang lien quan
 
-function deleteVillages(regax){
-  Village.deleteMany({ villageID: regax })
+function deleteVillages(regex){
+  Village.deleteMany({ villageID: regex })
   .exec((err, villages) => {
     if (err) {
       console.log(err)
@@ -46,25 +46,89 @@ function deleteVillages(regax){
   })
 }
 
-function deleteUsers(regax) {
-  User.deleteMany({ username: regax })
-    .exec((err, users) => {
-      if (err) {
-        console.log(err)
-        return;
-      }
-      console.log("delete all user were created");
+//sua het district lien quan khi nguoi dung sua cityID
+function putDistricts(regex, ID) {
+  District.find({districtID: regex})
+  .exec((err, districts) => {
+    if (err) {
+      console.log(err)
+      return;
+    }
+    districts.forEach(district => {
+      var oldID = district.districtID
+      var newID = oldID.replace(regex,ID)
+      console.log(newID)
+      district.districtID = newID
+      district.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("cap nhat districtID thanh cong")
+      });
 
-    })
-  return;
+    });
+  })
 }
 
-//xoa het citizen lien quan
+
+//sua het ward lien quan khi nguoi dung sua cityID/districtID
+function putWards(regex, ID) {
+  Ward.find({wardID: regex})
+  .exec((err, wards) => {
+    if (err) {
+      console.log(err)
+      return;
+    }
+    wards.forEach(ward => {
+      var oldID = ward.wardID
+      var newID = oldID.replace(regex,ID)
+      console.log(newID)
+      ward.wardID = newID
+      ward.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("cap nhat wardID thanh cong")
+      });
+
+    });
+  })
+}
+
+//sua het village lien quan khi nguoi dung sua cityID/districtID 
+function putVillages(regex, ID) {
+  Village.find({villageID: regex})
+  .exec((err, villages) => {
+    if (err) {
+      console.log(err)
+      return;
+    }
+    villages.forEach(village => {
+      var oldID = village.villageID
+      var newID = oldID.replace(regex, ID)
+      console.log(newID)
+      village.villageID = newID
+      village.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("cap nhat villageID thanh cong")
+      });
+
+    });
+  })
+}
 
 const locationController = {
   deleteDistricts,
-  deleteVillages, deleteWards,
-  deleteUsers
+  deleteVillages, 
+  deleteWards,
+  putDistricts, 
+  putWards,
+  putVillages
  
 };
 

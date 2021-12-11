@@ -43,9 +43,22 @@ checkDuplicateWardID = (req, res, next) => {
 //kiểm tra tồn tại thành phố/ tỉnh hay không:
 checkWardExisted = (req, res, next) => {
     // wardID
-    Ward.findOne({
-        wardID: req.body.wardID,
-    }).exec((err, ward) => {
+    Ward.findById(req.body._id).exec((err, ward) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        if (!ward) {
+            res.status(400).send({ message: "Failed! _id is not exited!" });
+            return;
+        }
+        next();
+    });
+};
+
+checkWardExistedByWardID = (req, res, next) => {
+    // wardID
+    Ward.finsOne({wardID: req.body.wardID}).exec((err, ward) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -58,10 +71,12 @@ checkWardExisted = (req, res, next) => {
     });
 };
 
+
 const checkWard = {
     checkDuplicateWard,
     checkDuplicateWardID,
-    checkWardExisted
+    checkWardExisted,
+    checkWardExistedByWardID
    
   };
   

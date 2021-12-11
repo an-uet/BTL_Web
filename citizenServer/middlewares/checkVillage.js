@@ -43,9 +43,22 @@ checkDuplicateVillageID = (req, res, next) => {
 //kiểm tra tồn tại thành phố/ tỉnh hay không:
 checkVillageExisted = (req, res, next) => {
     // villageID
-    Village.findOne({
-        villageID: req.body.villageID,
-    }).exec((err, village) => {
+    Village.findById(req.body._id).exec((err, village) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        if (!village) {
+            res.status(400).send({ message: "Failed! _id is not exited!" });
+            return;
+        }
+        next();
+    });
+};
+
+checkVillageExistedByVillageID = (req, res, next) => {
+    // villageID
+    Village.findOne({villageID: req.body.villageID}).exec((err, village) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -61,7 +74,8 @@ checkVillageExisted = (req, res, next) => {
 const checkVillage = {
     checkDuplicateVillage,
     checkDuplicateVillageID,
-    checkVillageExisted
+    checkVillageExisted,
+    checkVillageExistedByVillageID
 
 };
 

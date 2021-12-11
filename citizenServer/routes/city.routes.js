@@ -1,6 +1,7 @@
 const { authJwt } = require("../middlewares");
 const checkCity = require("../middlewares/checkCity")
-const cityController = require("../controllers/city.controller")
+const cityController = require("../controllers/city.controller");
+const { checkDuplicateCityID } = require("../middlewares/checkCity");
 
 //routes
 module.exports = function (app) {
@@ -16,12 +17,12 @@ module.exports = function (app) {
 
     );
 
-    //xóa mã: truyền vào cityID.
+    //xóa mã: truyền vào _id.
     app.delete("/city",
         [
             authJwt.verifyToken, 
             authJwt.isA1, 
-            checkCity.checkCityExisted
+            checkCity.checkCityExistedByCityID
         ],
         cityController.deleteCity
     )
@@ -31,8 +32,10 @@ module.exports = function (app) {
     app.put("/city",
         [
             authJwt.verifyToken, 
-            authJwt.isA2, 
-            checkCity.checkCityExisted
+            authJwt.isA1, 
+            checkCity.checkDuplicateCityID,
+            checkCity.checkCityExisted,
+           
         ],
         cityController.putCity
     )

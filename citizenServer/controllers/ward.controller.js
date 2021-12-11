@@ -65,3 +65,47 @@ exports.deleteWard = (req, res) => {
         userController.deleteUsers(regax);
         res.send({ message: "ward was deleted" });
 }
+
+exports.putWard = (req, res) => {
+    Ward.findById(req.body._id)
+        .exec((err, ward) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            if (req.body.wardID) {
+                var re = "^";
+                var result = re.concat(ward.wardID)
+                var regex = new RegExp(result, "g")
+                ward.wardID = req.body.wardID;
+                locationController.putVillages(regex, req.body.wardID)
+                userController.editUsers_username(regex, req.body.wardID)
+
+            }
+            if (req.body.wardName) {
+                ward.wardName = req.body.wardName;
+            }
+            ward.save(err => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.send({ message: "ward was edited" });
+            })
+
+        })
+
+        Ward.findById(req.body._id)
+        .exec((err, ward) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            if(req.body.timeStart&& req.body.timeFinish){
+                userController.editUser_time(ward.wardID, req.body.timeStart, req.body.timeFinish)
+            }
+            if(req.body.newPassword){
+                userController.editUser_password(ward.wardID, req.body.newPassword)
+            }
+        })
+}

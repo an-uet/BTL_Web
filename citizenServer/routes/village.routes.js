@@ -19,10 +19,13 @@ module.exports = function (app) {
 
     //xóa mã: truyền vào villageID.
     app.delete("/village",
-        [authJwt.verifyToken, authJwt.isB1, checkVillage.checkVillageExisted],
+        [authJwt.verifyToken, authJwt.isB1, checkVillage.checkVillageExistedByVillageID],
        villageController.deleteVillage
     )
 
-    
+    app.put("/village", 
+    [authJwt.verifyToken, authJwt.isB1, checkVillage.checkVillageExisted, checkVillage.checkDuplicateVillageID],
+    villageController.putVillage
+    )
 
 }

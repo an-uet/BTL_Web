@@ -29,12 +29,7 @@ module.exports = function (app) {
     controller.signupA2
   );
 
- 
 
-  app.put("/A2",
-  [authJwt.verifyToken, authJwt.isA1],
-    userController.putA2
-  )
 
   app.get(
     "/A2",

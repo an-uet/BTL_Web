@@ -43,9 +43,22 @@ checkDuplicateDistrictID = (req, res, next) => {
 //kiểm tra tồn tại thành phố/ tỉnh hay không:
 checkDistrictExisted = (req, res, next) => {
     // districtID
-    District.findOne({
-        districtID: req.body.districtID,
-    }).exec((err, district) => {
+    District.findById(req.body._id).exec((err, district) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        if (!district) {
+            res.status(400).send({ message: "Failed! _id is not exited!" });
+            return;
+        }
+        next();
+    });
+};
+
+checkDistrictExistedByDistrictID = (req, res, next) => {
+    // districtID
+    District.findOne({districtID: req.body.districtID}).exec((err, district) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -61,7 +74,8 @@ checkDistrictExisted = (req, res, next) => {
 const checkDistrict = {
     checkDuplicateDistrict,
     checkDuplicateDistrictID,
-    checkDistrictExisted
+    checkDistrictExisted,
+    checkDistrictExistedByDistrictID
    
   };
   

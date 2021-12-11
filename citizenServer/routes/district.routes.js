@@ -17,12 +17,12 @@ module.exports = function (app) {
 
     //xóa mã: truyền vào disctrictID.. xuw lis them khi xao ma thi xoa tai khoan khong.
     app.delete("/district",
-        [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted],
+        [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExistedByDistrictID],
         districtController.deleteDistrict
     )
 
     app.put("/district", 
-    [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted],
+    [authJwt.verifyToken, authJwt.isA2, checkDistrict.checkDistrictExisted, checkDistrict.checkDuplicateDistrictID],
     districtController.putDistrict
     )
 }

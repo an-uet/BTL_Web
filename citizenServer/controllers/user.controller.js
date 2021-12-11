@@ -1,4 +1,5 @@
 const db = require("../models");
+var bcrypt = require("bcryptjs");
 const User = db.user;
 const Role = db.role;
 
@@ -86,8 +87,8 @@ exports.getB2 = (req, res) => {
 
 
 //xoa nhung tai khoan lien quan
-exports.deleteUsers = (regax) => {
-  User.deleteMany({ username: regax })
+exports.deleteUsers = (regex) => {
+  User.deleteMany({ username: regex })
       .exec((err, users) => {
           if (err) {
               console.log(err)
@@ -99,62 +100,81 @@ exports.deleteUsers = (regax) => {
 }
 
 
-//edit user
-exports.editUser = (req, res) => {
-  User.findOneAndUpdate({ username: req.body.username }, {
-    $set: req.body
-  }, { new: true })
+//sua het user anh huong khi mã tinh/huyện/xa/lang thay doi
+exports.editUsers_username = (regex, ID) =>{
+  User.find({username: regex})
+  .exec((err, users) => {
+    if (err) {
+      console.log(err)
+      return;
+    }
+    users.forEach(user => {
+      var oldUsername = user.username
+      var newUsername = oldUsername.replace(regex,ID)
+      user.username = newUsername
+      var oldCreateBy = user.createBy
+      var newCreateBy = oldCreateBy.replace(regex, ID)
+      user.createBy = newCreateBy
+      
+
+      user.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("cap nhat users thanh cong")
+      });
+
+    });
+  })
+}
+
+//sửa password
+exports.editUser_password = (ID, newPassword) => {
+  User.findOne({ username: ID })
     .exec((err, user) => {
       if (err) {
-        res.status(500).send({ message: err });
+        console.log(err)
         return;
       }
-      res.send({ message: "User was edited" });
-
+      user.password = bcrypt.hashSync(newPassword, 8)
+     
+      user.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("cap nhat users thanh cong")
+      });
     })
 }
 
-exports.putA2 = (req, res) => {
-
-  //xác nhận tài khoản cần sửa là A2
-  User.findOne({ username: req.body.username }).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    Role.find(
-      {
-        _id: { $in: user.roles }
-      },
-      (err, roles) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
-        }
-
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "A2") {
-
-            User.findOneAndUpdate({ username: req.body.username }, { $set: req.body }, { new: true })
-              .exec((err, user) => {
-                if (err) {
-                  res.status(500).send({ message: err });
-                  return;
-                }
-
-                //User.find({createBy: user.username})
-                //res.send({ message: "A2 was edited" });
-
-              })
-            return;
-          }
-        }
-
-        res.status(403).send({ message: "you can not edit this user!" });
+//sửa time hoạt động
+exports.editUser_time = (ID, newTimeStart, newTimeFinish) => {
+  User.findOne({ username: ID })
+    .exec((err, user) => {
+      if (err) {
+        console.log(err)
         return;
       }
-    );
-  });
-
+      user.timeStart = newTimeStart;
+      user.timeFinish = newTimeFinish;
+      //check active
+      var currentTime = new Date();
+      var time1 = new Date(newTimeStart);
+      var time2 = new Date(newTimeFinish);
+      if (time1 <= currentTime && currentTime <= time2) {
+        user.active = 1
+      }
+      else {
+        user.active = 0
+      }
+      user.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("cap nhat users thanh cong")
+      });
+    })
 }

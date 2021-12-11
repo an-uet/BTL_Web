@@ -119,10 +119,10 @@ exports.deleteCitizensOfVillage = (_id) => {
 
 exports.getCitizen = (req, res) => {
     Citizen.find()
-    .populate("village")
-    .populate("city")
-    .populate("district")
-    .populate("ward")
+    .populate("village","villageName villageID")
+    .populate("city", "cityName cityID")
+    .populate("district", "districtName districtID")
+    .populate("ward", "wardName wardID")
     .exec((err, citizens) =>{
       if (err) {
         res.status(500).send({ message: err });

@@ -66,4 +66,48 @@ exports.deleteVillage = (req, res) => {
         res.send({ message: "Village was deleted" });
 }
 
+exports.putVillage = (req, res) => {
+    Village.findById(req.body._id)
+        .exec((err, village) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            if (req.body.villageID) {
+                var re = "^";
+                var result = re.concat(village.villageID)
+                var regex = new RegExp(result, "g")
+                village.villageID = req.body.villageID;
+                userController.editUsers_username(regex, req.body.villageID)
+
+            }
+            if (req.body.villageName) {
+                village.villageName = req.body.villageName;
+            }
+            village.save(err => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.send({ message: "village was edited" });
+            })
+
+        })
+
+        Village.findById(req.body._id)
+        .exec((err, village) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            if(req.body.timeStart&& req.body.timeFinish){
+                userController.editUser_time(village.villageID, req.body.timeStart, req.body.timeFinish)
+            }
+            if(req.body.newPassword){
+                userController.editUser_password(village.villageID, req.body.newPassword)
+            }
+        })
+}
+
+
 

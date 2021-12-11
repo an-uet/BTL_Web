@@ -57,15 +57,46 @@ exports.deleteDistrict = (req, res) => {
 }
 
 exports.putDistrict = (req, res) => {
-    District.findOneAndUpdate({ districtID: req.body.districtID }, {
-        $set: req.body
-    }, { new: true })
+    District.findById(req.body._id)
         .exec((err, district) => {
             if (err) {
                 res.status(500).send({ message: err });
                 return;
             }
-            res.send({ message: "district was edited" });
+            if (req.body.districtID) {
+                var re = "^";
+                var result = re.concat(district.districtID)
+                var regex = new RegExp(result, "g")
+                district.districtID = req.body.districtID;
+                locationController.putWards(regex, req.body.districtID)
+                locationController.putVillages(regex, req.body.districtID)
+                userController.editUsers_username(regex, req.body.districtID)
 
+            }
+            if (req.body.districtName) {
+                district.districtName = req.body.districtName;
+            }
+            district.save(err => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.send({ message: "district was edited" });
+            })
+
+        })
+
+        District.findById(req.body._id)
+        .exec((err, district) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            if(req.body.timeStart&& req.body.timeFinish){
+                userController.editUser_time(district.districtID, req.body.timeStart, req.body.timeFinish)
+            }
+            if(req.body.newPassword){
+                userController.editUser_password(district.districtID, req.body.newPassword)
+            }
         })
 }
