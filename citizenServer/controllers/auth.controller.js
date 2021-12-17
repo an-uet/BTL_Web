@@ -17,54 +17,64 @@ const { village } = require("../models");
 
 exports.signupA1 = (req, res) => {
 
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    active: 1,
+  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
+  regex = new RegExp(result)
+  if (req.body.password.match(regex)) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      active: 1,
 
-  });
+    });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    Role.findOne({ name: "A1" }, (err, role) => {
+    user.save((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
 
-      user.roles = [role._id];
-      user.save(err => {
+      Role.findOne({ name: "A1" }, (err, role) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
 
-        res.send({ message: "User was registered successfully!" });
+        user.roles = [role._id];
+        user.save(err => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+
+          res.send({ message: "User was registered successfully!" });
+        });
       });
+
     });
 
-  });
+  }
+
+  else {
+    res.status(400).send({ message: "mat khau khong hop le" })
+  }
+
 };
 
 
 //signup user: A2
 exports.signupA2 = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
+  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
+  regex = new RegExp(result)
+
+  if (req.body.password.match(regex)) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish,
+      complete: 0,
+    });
 
     var currentTime = new Date();
     if (req.body.timeStart && req.body.timeFinish) {
@@ -83,7 +93,7 @@ exports.signupA2 = (req, res) => {
         res.status(500).send({ message: err });
         return;
       }
-      
+
       user.createBy = temp.username
     })
 
@@ -100,37 +110,43 @@ exports.signupA2 = (req, res) => {
           res.status(500).send({ message: err });
           return;
         }
-        user.city = city._id;
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-          res.send({ message: "User was registered successfully!" });
-        });
+        if (city) {
+          user.city = city._id;
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            res.send({ message: "User was registered successfully!" });
+          });
+        }
+        else {
+          res.status(400).send({ message: "Thành phố/tỉnh này chưa được cấp mã nên không thể cấp tài khoản." })
+        }
+
 
       });
     });
+  }
+  else {
+    res.status(400).send({ message: "mat khau khong hop le" })
+  }
 
-
-  });
 };
 
 //signup user: A3
 exports.signupA3 = (req, res) => {
+  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
+  regex = new RegExp(result)
+  if (req.body.password.match(regex)) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish
+    });
 
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
     var currentTime = new Date();
     if (req.body.timeStart && req.body.timeFinish) {
       var time1 = new Date(req.body.timeStart);
@@ -148,7 +164,7 @@ exports.signupA3 = (req, res) => {
         res.status(500).send({ message: err });
         return;
       }
-      
+
       user.createBy = temp.username
     })
 
@@ -159,42 +175,50 @@ exports.signupA3 = (req, res) => {
       }
 
       user.roles = [role._id];
+
       District.findOne({ districtID: req.body.username }, (err, district) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-        user.district = district._id;
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-         res.send({ message: "User was registered successfully!" });
-        });
+        if (district) {
+          user.district = district._id;
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            res.send({ message: "User was registered successfully!" });
+          });
+        }
+        else {
+          res.status(400).send({ message: "Quận/huyện này chưa được cấp mã nên không thể cấp tài khoản." })
+
+        }
+
 
       });
     });
-  });
-
+  }
+  else {
+    res.status(400).send({ message: "mat khau khong hop le" })
+  }
 
 };
 
 
 //signup user: B1
 exports.signupB1 = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
+  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
+  regex = new RegExp(result)
+  if (req.body.password.match(regex)) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish
+    });
 
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
 
     var currentTime = new Date();
     if (req.body.timeStart && req.body.timeFinish) {
@@ -213,7 +237,7 @@ exports.signupB1 = (req, res) => {
         res.status(500).send({ message: err });
         return;
       }
-      
+
       user.createBy = temp.username
     })
 
@@ -229,36 +253,41 @@ exports.signupB1 = (req, res) => {
           res.status(500).send({ message: err });
           return;
         }
-        user.ward = ward._id;
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-         res.send({ message: "User was registered successfully!" });
-        });
+        if (ward) {
+          user.ward = ward._id;
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            res.send({ message: "User was registered successfully!" });
+          });
+        }
+        else {
+          res.status(400).send({ message: "Xã/phường này chưa được cấp mã nên không thể cấp tài khoản" })
+        }
+
 
       });
     });
 
-  });
-
+  }
+  else {
+    res.status(400).send({ message: "mat khau khong hop le" })
+  }
 };
 
 //signup user: B2
 exports.signupB2 = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    timeStart: req.body.timeStart,
-    timeFinish: req.body.timeFinish
-  });
-
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
+  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
+  regex = new RegExp(result)
+  if (req.body.password.match(regex)) {
+    const user = new User({
+      username: req.body.username,
+      password: bcrypt.hashSync(req.body.password, 8),
+      timeStart: req.body.timeStart,
+      timeFinish: req.body.timeFinish
+    });
 
     var currentTime = new Date();
     if (req.body.timeStart && req.body.timeFinish) {
@@ -277,7 +306,7 @@ exports.signupB2 = (req, res) => {
         res.status(500).send({ message: err });
         return;
       }
-      
+
       user.createBy = temp.username
     })
 
@@ -294,18 +323,27 @@ exports.signupB2 = (req, res) => {
           res.status(500).send({ message: err });
           return;
         }
-        user.village = village._id;
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-         res.send({ message: "User was registered successfully!" });
-        });
+        if (village) {
+          user.village = village._id;
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            res.send({ message: "User was registered successfully!" });
+          });
+        }
+        else {
+          res.status(400).send({ message: "Làng/xóm này chưa được cấp mã nên không thể cấp tài khoản." })
+        }
+
 
       });
     });
-  });
+  }
+  else {
+    res.status(400).send({ message: "mat khau khong hop le" })
+  }
 };
 
 
@@ -336,7 +374,7 @@ function updateActiveField() {
             res.status(500).send({ message: err });
             return;
           }
-          console.log("cap nhat thoi gian hoat dong thanh cong")
+          //console.log("cap nhat thoi gian hoat dong thanh cong")
         });
       }
     });
@@ -363,7 +401,7 @@ function updateActiveField() {
                 res.status(500).send({ message: err });
                 return;
               }
-              console.log("thanh cong")
+              // console.log("thanh cong")
             });
           })
         })
@@ -407,7 +445,7 @@ exports.signin = (req, res) => {
       }
 
       var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400 // 24 hours
+        expiresIn: 14400 // 4 hours
       });
 
       var authorities = [];
@@ -426,14 +464,12 @@ exports.signin = (req, res) => {
       if (user.district) {
         district_name = user.district.districtName
       }
-      if(user.ward) {
+      if (user.ward) {
         ward_name = user.ward.wardName
       }
-      if(user.village) {
+      if (user.village) {
         village_name = user.village.villageName
       }
-
-      console.log(village_name)
       res.status(200).send({
         id: user._id,
         username: user.username,

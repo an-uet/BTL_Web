@@ -8,7 +8,17 @@ const citizenController = require('./citizen.controller')
 
 
 exports.postWard = (req, res) => {
-
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        var name = user.username;
+        re = "+[0-9]{2}$";
+        result = name.concat(re);
+        regex = new RegExp(result, "g")
+        if (req.body.wardID.match(regex)) {
+            
     const ward = new Ward({
         wardID: req.body.wardID,
         wardName: req.body.wardName
@@ -45,6 +55,12 @@ exports.postWard = (req, res) => {
         });
 
     })
+        }
+        else{
+            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
+        }
+    })
+
 }
 exports.deleteWard = (req, res) => {
     var re = "^";

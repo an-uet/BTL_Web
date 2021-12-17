@@ -137,8 +137,9 @@ exports.editUser_password = (ID, newPassword) => {
         console.log(err)
         return;
       }
-      user.password = bcrypt.hashSync(newPassword, 8)
-     
+      if(user){
+     user.password = bcrypt.hashSync(newPassword, 8)
+   
       user.save(err => {
         if (err) {
           console.log(err);
@@ -146,6 +147,8 @@ exports.editUser_password = (ID, newPassword) => {
         }
         console.log("cap nhat users thanh cong")
       });
+      }
+     
     })
 }
 
@@ -157,24 +160,32 @@ exports.editUser_time = (ID, newTimeStart, newTimeFinish) => {
         console.log(err)
         return;
       }
-      user.timeStart = newTimeStart;
-      user.timeFinish = newTimeFinish;
-      //check active
-      var currentTime = new Date();
-      var time1 = new Date(newTimeStart);
-      var time2 = new Date(newTimeFinish);
-      if (time1 <= currentTime && currentTime <= time2) {
-        user.active = 1
-      }
-      else {
-        user.active = 0
-      }
-      user.save(err => {
-        if (err) {
-          console.log(err);
-          return;
+      if(user)
+      {
+        user.timeStart = newTimeStart;
+        user.timeFinish = newTimeFinish;
+        //check active
+        var currentTime = new Date();
+        var time1 = new Date(newTimeStart);
+        var time2 = new Date(newTimeFinish);
+        if (time1 <= currentTime && currentTime <= time2) {
+          user.active = 1
         }
-        console.log("cap nhat users thanh cong")
-      });
+        else {
+          user.active = 0
+        }
+        user.save(err => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("cap nhat users thanh cong")
+        });
+      }
+    
     })
 }
+
+
+
+

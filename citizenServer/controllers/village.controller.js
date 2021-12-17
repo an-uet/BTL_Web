@@ -7,44 +7,60 @@ const citizenController = require('./citizen.controller')
 
 
 exports.postVillage = (req, res) => {
-
-    const village = new Village({
-        villageID: req.body.villageID,
-        villageName: req.body.villageName
-    });
-    village.save((err, village) => {
+    User.findById(req.userId).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
-
-        User.findById(req.userId).exec((err, user) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            village.ward = user.ward;
-            //console.log(user)
-            var id = user.ward;
-            //console.log(id)
-            Ward.findById(id).exec((err, ward) => {
+        var name = user.username;
+        re = "+[0-9]{2}$";
+        result = name.concat(re);
+        regex = new RegExp(result, "g")
+        if (req.body.villageID.match(regex)) {
+            const village = new Village({
+                villageID: req.body.villageID,
+                villageName: req.body.villageName
+            });
+            village.save((err, village) => {
                 if (err) {
                     res.status(500).send({ message: err });
                     return;
                 }
-                village.district = ward.district;
-                village.city = ward.city;
-                village.save(err => {
+        
+                User.findById(req.userId).exec((err, user) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    res.send({ message: "village was created successfully!" });
+                    village.ward = user.ward;
+                    //console.log(user)
+                    var id = user.ward;
+                    //console.log(id)
+                    Ward.findById(id).exec((err, ward) => {
+                        if (err) {
+                            res.status(500).send({ message: err });
+                            return;
+                        }
+                        village.district = ward.district;
+                        village.city = ward.city;
+                        village.save(err => {
+                            if (err) {
+                                res.status(500).send({ message: err });
+                                return;
+                            }
+                            res.send({ message: "village was created successfully!" });
+                        });
+                    })
                 });
+        
             })
-        });
 
+        }
+        else {
+            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
+        }
     })
+    
 }
 
 

@@ -1,3 +1,4 @@
+const { district } = require("../models");
 const db = require("../models");
 const City = db.city;
 const District = db.district;
@@ -66,7 +67,6 @@ function putDistricts(regex, ID) {
         }
         console.log("cap nhat districtID thanh cong")
       });
-
     });
   })
 }
@@ -119,6 +119,24 @@ function putVillages(regex, ID) {
       });
 
     });
+  })
+}
+
+getAllLocation = (req, res) => {
+  var list = []
+  City.find().exec((err,citis) => {
+    citis.forEach(city => {
+      var oneCity = []
+      District.find().exec((er, districts) => {
+        districts.forEach(district => {
+          if(district.city = city._id){
+            oneCity.push(district);
+          }
+        });
+      })
+      list.push(oneCity)
+    });
+
   })
 }
 

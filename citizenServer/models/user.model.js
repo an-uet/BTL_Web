@@ -33,6 +33,7 @@ const User = mongoose.model(
       ref: "Village"
     },
     active: Number,
+    complete: Number,
   })
 );
 
