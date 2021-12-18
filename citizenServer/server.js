@@ -41,7 +41,6 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    // console.log("Successfully connect to MongoDB.");
     initial();
   })
   .catch((err) => {
@@ -63,7 +62,8 @@ require("./routes/citizen.routes")(app);
 function initial() {
 
 //kiểm tra thời gian làm việc và cập nhập vào database
- /* User.find({}).exec((err, users) => {
+  var currentTime = new Date();
+  User.find({}).exec((err, users) => {
     if (err) {
       console.log("loi");
       return;
@@ -86,7 +86,7 @@ function initial() {
             res.status(500).send({ message: err });
             return;
           }
-          console.log("cap nhat thoi gian hoat dong thanh cong")
+          //console.log("cap nhat thoi gian hoat dong thanh cong")
         });
       }
     });
@@ -113,13 +113,55 @@ function initial() {
                 res.status(500).send({ message: err });
                 return;
               }
-              console.log("thanh cong")
+              // console.log("thanh cong")
             });
           })
         })
       }
     });
-  });*/
+  });
+
+/*
+  User.find({}).exec((err, users) => {
+    if (err) {
+      console.log("loi");
+      return;
+    }
+
+    users.forEach(function (user) {
+      var sum = 0;
+        User.find({ createBy: user.username }).exec((err, arr) => {
+          if (err) {
+            console.log("loi");
+            return;
+          }
+          arr.forEach(function (temp) {
+            if(temp.complete == 0)
+            {
+              sum+=1;
+            }
+          })
+          if(sum == 0) {
+          user.complete = 1;
+          }
+          else{
+            user.complete = 0
+          }
+        })
+        
+          user.save(err => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+             console.log("thanh cong")
+          });
+      
+    });
+  });
+
+*/
+
 }
 
 

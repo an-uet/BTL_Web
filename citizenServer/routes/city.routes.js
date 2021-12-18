@@ -1,7 +1,6 @@
-const { authJwt } = require("../middlewares");
-const checkCity = require("../middlewares/checkCity")
+const { authJwt, checkCity } = require("../middlewares");
 const cityController = require("../controllers/city.controller");
-const { checkDuplicateCityID } = require("../middlewares/checkCity");
+
 
 //routes
 module.exports = function (app) {

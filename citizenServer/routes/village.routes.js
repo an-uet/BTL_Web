@@ -1,6 +1,5 @@
 
-const { authJwt } = require("../middlewares");
-const checkVillage = require("../middlewares/checkVillage");
+const { authJwt, checkVillage } = require("../middlewares");
 const villageController = require("../controllers/village.controller")
 
 module.exports = function (app) {
@@ -20,12 +19,12 @@ module.exports = function (app) {
     //xóa mã: truyền vào villageID.
     app.delete("/village",
         [authJwt.verifyToken, authJwt.isB1, checkVillage.checkVillageExistedByVillageID],
-       villageController.deleteVillage
+        villageController.deleteVillage
     )
 
-    app.put("/village", 
-    [authJwt.verifyToken, authJwt.isB1, checkVillage.checkVillageExisted, checkVillage.checkDuplicateVillageID],
-    villageController.putVillage
+    app.put("/village",
+        [authJwt.verifyToken, authJwt.isB1, checkVillage.checkVillageExisted, checkVillage.checkDuplicateVillageID],
+        villageController.putVillage
     )
 
 }

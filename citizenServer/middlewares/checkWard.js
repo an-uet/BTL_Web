@@ -58,7 +58,7 @@ checkWardExisted = (req, res, next) => {
 
 checkWardExistedByWardID = (req, res, next) => {
     // wardID
-    Ward.finsOne({wardID: req.body.wardID}).exec((err, ward) => {
+    Ward.findOne({wardID: req.body.wardID}).exec((err, ward) => {
         if (err) {
             res.status(500).send({ message: err });
             return;

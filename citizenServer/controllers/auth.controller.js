@@ -143,7 +143,8 @@ exports.signupA3 = (req, res) => {
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
       timeStart: req.body.timeStart,
-      timeFinish: req.body.timeFinish
+      timeFinish: req.body.timeFinish,
+      complete: 0
     });
 
 
@@ -216,7 +217,8 @@ exports.signupB1 = (req, res) => {
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
       timeStart: req.body.timeStart,
-      timeFinish: req.body.timeFinish
+      timeFinish: req.body.timeFinish,
+      complete: 0
     });
 
 
@@ -483,6 +485,7 @@ exports.signin = (req, res) => {
         village: village_name,
         accessToken: token,
         isActive: user.active,
+        isComplete: user.complete
       });
     });
 };

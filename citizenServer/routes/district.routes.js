@@ -1,5 +1,4 @@
-const { authJwt } = require("../middlewares");
-const checkDistrict = require("../middlewares/checkDistrict");
+const { authJwt, checkDistrict } = require("../middlewares");
 const districtController = require("../controllers/district.controller")
 
 //routes

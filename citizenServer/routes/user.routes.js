@@ -31,11 +31,6 @@ module.exports = function (app) {
 
 
 
-  app.get(
-    "/A2",
-    [authJwt.verifyToken, authJwt.isA1],
-    userController.getA2
-  );
 
 
   //A2 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A3
@@ -49,12 +44,7 @@ module.exports = function (app) {
     controller.signupA3
   );
 
-  
 
-  app.get("/A3",
-  [authJwt.verifyToken, authJwt.isA2],
-  userController.getA3
-);
 
   //A3 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B1
   app.post("/B1",
@@ -72,11 +62,6 @@ module.exports = function (app) {
 
   
 
-  app.get("/B1",
-  [authJwt.verifyToken, authJwt.isA3],
-  userController.getB1
-);
-
 
   //B1 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B2
   app.post("/B2",
@@ -90,13 +75,13 @@ module.exports = function (app) {
   );
 
 
-  app.get("/B2",
-  [authJwt.verifyToken, authJwt.isB1],
-  userController.getB2
-);
-
-
-
   //signin 
 app.post("/signin", controller.signin);
+
+
+app.get("/account",
+[authJwt.verifyToken],
+userController.getAccount);
 };
+
+

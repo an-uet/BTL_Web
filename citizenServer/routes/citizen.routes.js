@@ -1,6 +1,6 @@
 const db = require("../models");
 const { authJwt } = require("../middlewares");
-const checkCitizen = require("../middlewares/checkCitizen");
+const {checkCitizen} = require("../middlewares");
 const citizenController = require("../controllers/citizen.controller")
 
 module.exports = function (app) {

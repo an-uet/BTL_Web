@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { district } = require(".");
 
 const User = mongoose.model(
   "User",

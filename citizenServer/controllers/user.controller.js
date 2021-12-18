@@ -4,7 +4,7 @@ const User = db.user;
 const Role = db.role;
 
 //get list of user.
-exports.getA2 = (req, res) => {
+exports.getAccount = (req, res) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
@@ -13,66 +13,8 @@ exports.getA2 = (req, res) => {
     User.find({createBy: user.username})
     .populate("roles")
     .populate("city")
-    .exec((err, users) =>{
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-      res.status(200).send(users);
-
-    })
-  });
-};
-
-exports.getA3 = (req, res) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-    User.find({createBy: user.username})
-    .populate("roles")
     .populate("district")
-    .exec((err, users) =>{
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-      res.status(200).send(users);
-
-    })
-  });
-  
-};
-
-exports.getB1 = (req, res) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-    User.find({createBy: user.username})
-    .populate("roles")
     .populate("ward")
-    .exec((err, users) =>{
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-      res.status(200).send(users);
-
-    })
-  });
-};
-
-exports.getB2 = (req, res) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-    User.find({createBy: user.username})
-    .populate("roles")
     .populate("village")
     .exec((err, users) =>{
       if (err) {
@@ -84,7 +26,6 @@ exports.getB2 = (req, res) => {
     })
   });
 };
-
 
 //xoa nhung tai khoan lien quan
 exports.deleteUsers = (regex) => {
@@ -185,6 +126,22 @@ exports.editUser_time = (ID, newTimeStart, newTimeFinish) => {
     
     })
 }
+
+
+//B1 update hoàn thành công việc khai báo cư dân.
+exports.completeTheWork= (req, res) => {
+  if(req.body.completeTheWork == 1) {
+    User.findByIdAndUpdate(req.userId, {complete: 1}, function(err, user){
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+    }
+    res.status(200).send({message: "Hoàn thành khai báo cư dân"})
+
+    })
+  }
+}
+
 
 
 

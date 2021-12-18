@@ -1,7 +1,6 @@
-const { authJwt } = require("../middlewares");
-const checkWard = require("../middlewares/checkWard");
+const { authJwt, checkWard } = require("../middlewares");
 const wardController = require("../controllers/ward.controller")
-
+const userController = require("../controllers/user.controller")
 module.exports = function (app) {
 
     //cấp mã.
@@ -21,10 +20,12 @@ module.exports = function (app) {
         wardController.deleteWard
 
     )
-    app.put("/district", 
-    [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExisted, checkWard.checkDuplicateWardID],
-    wardController.putWard
+    app.put("/ward",
+        [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExisted, checkWard.checkDuplicateWardID],
+        wardController.putWard
     )
+
+    app.post("/completeTheWork", [authJwt.verifyToken, authJwt.isB1], userController.completeTheWork)
 
 
 
