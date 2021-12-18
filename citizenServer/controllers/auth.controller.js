@@ -475,7 +475,7 @@ exports.signin = (req, res) => {
       res.status(200).send({
         id: user._id,
         username: user.username,
-        role: authorities,
+        roles: authorities,
         createBy: user.createBy,
         timeStart: user.timeStart,
         timeFinish: user.timeFinish,

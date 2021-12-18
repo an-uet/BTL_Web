@@ -23,34 +23,34 @@ exports.postCitizenForB2 = (req, res) => {
 
 
     });
-        User.findById(req.userId).exec((err, user) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        citizen.village = user.village;
+        var id = user.village;
+        Village.findById(id).exec((err, village) => {
             if (err) {
                 res.status(500).send({ message: err });
                 return;
             }
 
-            citizen.village = user.village;
-            var id = user.village;
-            Village.findById(id).exec((err, village) => {
+            citizen.city = village.city;
+            citizen.district = village.district;
+            citizen.ward = village.ward
+            citizen.save(err => {
                 if (err) {
                     res.status(500).send({ message: err });
                     return;
                 }
+                res.send({ message: "citizen was created successfully!" });
+            });
+        })
+    });
 
-                citizen.city = village.city;
-                citizen.district = village.district;
-                citizen.ward = village.ward
-                citizen.save(err => {
-                    if (err) {
-                        res.status(500).send({ message: err });
-                        return;
-                    }
-                    res.send({ message: "citizen was created successfully!" });
-                });
-            })
-        });
 
-    
 }
 
 //khai báo cư dân B1: lúc nhập thì nhập thêm 1 trường villageName.
@@ -76,7 +76,7 @@ exports.postCitizenForB1 = (req, res) => {
 
         citizen.ward = user.ward;
         var id = user.ward;
-        
+
         Ward.findById(id).exec((err, ward) => {
             if (err) {
                 res.status(500).send({ message: err });
@@ -91,7 +91,7 @@ exports.postCitizenForB1 = (req, res) => {
                 return;
             }
             if (village) {
-                if(village.ward.equals(user.ward)) {
+                if (village.ward.equals(user.ward)) {
                     citizen.village = village._id;
                     citizen.save(err => {
                         if (err) {
@@ -320,6 +320,42 @@ exports.caculationOld = (req, res) => {
 }
 
 
+function caculateOld(citizens) {
+    var sum1 = 0;
+            var sum2 = 0;
+            var sum3 = 0;
+            var current = new Date().getFullYear();
+
+            citizens.forEach(citizen => {
+                var birthday = new Date(citizen.dateOfBirth).getFullYear();
+                var old = current - birthday;
+                if (0 <= old && old <= 14) {
+                    sum1 = sum1 + 1;
+                } //dưới độ tuổi lao động
+                else if (15 <= old && old <= 59) {
+                    sum2 += 1;
+                } // trong độ tuổi lao động
+                else if (old >= 60) {
+                    sum3 += 1; // trên độ tuổi lao động
+                }
+
+
+            })
+            //Hiện số dân đã nhập trên tỉnh/huyện/xã/ làng đó
+            console.log(sum1);
+            console.log(sum2);
+            console.log(sum3);
+           
+            return {
+                sum1: sum1,
+                sum2: sum2,
+                sum3: sum3
+            }
+
+
+
+}
+
 //lay danh sach cu dan cua ca nuoc.
 exports.getAllCitizens = (req, res) => {
     var list = [];
@@ -339,22 +375,103 @@ exports.getAllCitizens = (req, res) => {
 }
 
 //lay danh sach cu dan cua mot thanh pho/tinh
-exports.getCitizensOfCity = (req, res) => {
+exports.getCitizens = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
-        Citizen.find({ city: user.city }).exec((err, citizens) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.status(200).send(citizens)
-        })
+        //check city account
+        re1 = "^[0-9]{2}$"
+        regex1 = new RegExp(re1, "g")
+
+        //check district account
+        re2 = "^[0-9]{4}$"
+        regex2 = new RegExp(re2, "g")
+
+        //check ward account
+        re3 = "^[0-9]{6}$"
+        regex3 = new RegExp(re3, "g")
+
+        //check village account
+        re4 = "^[0-9]{8}$"
+        regex4 = new RegExp(re4, "g")
+
+
+        //get citizens of city.
+        if (user.username.match(regex1)) {
+            Citizen.find({ city: user.city })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    res.status(200).send(citizens)
+                })
+        }
+
+
+        //get citizens of district
+        if (user.username.match(regex2)) {
+            Citizen.find({ district: user.district })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    res.status(200).send(citizens)
+                })
+
+
+        }
+
+
+        //get citizens of ward
+        if (user.username.match(regex3)) {
+            Citizen.find({ ward: user.ward })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    res.status(200).send(citizens)
+                })
+
+        }
+
+        //get citizens of village
+        if (user.username.match(regex4)) {
+            Citizen.find({ village: user.village })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    res.status(200).send(citizens)
+                })
+
+        }
+
     })
 }
 
+/*
 //lay danh sach citizen cua 1 quan/huyen
 exports.getCitizensOfDistrict = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
@@ -407,3 +524,4 @@ exports.getCitizensOfVillage = (req, res) => {
     })
 }
 
+*/

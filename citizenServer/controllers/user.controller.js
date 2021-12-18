@@ -10,20 +10,28 @@ exports.getAccount = (req, res) => {
       res.status(500).send({ message: err });
       return;
     }
-    User.find({createBy: user.username})
-    .populate("roles")
-    .populate("city")
-    .populate("district")
-    .populate("ward")
-    .populate("village")
-    .exec((err, users) =>{
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-      res.status(200).send(users);
+    if(user){
+      User.find({createBy: user.username})
+      .populate("roles")
+      .populate("city")
+      .populate("district")
+      .populate("ward")
+      .populate("village")
+      .exec((err, users) =>{
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+        res.status(200).send(users);
+  
+      })
 
-    })
+
+    }
+    else {
+      res.send({message: "loi"})
+    }
+   
   });
 };
 
