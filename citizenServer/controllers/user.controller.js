@@ -94,7 +94,7 @@ exports.editUser_password = (ID, newPassword) => {
           console.log(err);
           return;
         }
-        console.log("cap nhat users thanh cong")
+        console.log("cap nhat pass thanh cong")
       });
       }
      
@@ -111,6 +111,7 @@ exports.editUser_time = (ID, newTimeStart, newTimeFinish) => {
       }
       if(user)
       {
+        console.log("tim thay user")
         user.timeStart = newTimeStart;
         user.timeFinish = newTimeFinish;
         //check active
@@ -128,7 +129,7 @@ exports.editUser_time = (ID, newTimeStart, newTimeFinish) => {
             console.log(err);
             return;
           }
-          console.log("cap nhat users thanh cong")
+          console.log("cap nhat time thanh cong")
         });
       }
     

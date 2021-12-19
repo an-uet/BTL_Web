@@ -63,6 +63,7 @@ function initial() {
 
 //kiểm tra thời gian làm việc và cập nhập vào database
   var currentTime = new Date();
+  console.log(currentTime)
   User.find({}).exec((err, users) => {
     if (err) {
       console.log("loi");
@@ -77,7 +78,6 @@ function initial() {
           user.active = 1
         }
         else {
-
           user.active = 0;
         }
 

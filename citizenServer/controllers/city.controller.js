@@ -6,10 +6,8 @@ const userController = require('./user.controller');
 const citizenController = require('./citizen.controller')
 
 exports.postCity = (req, res) => {
-    re = "^[0-9]{2}$"
-    regex = new RegExp(re, "g")
-    if(req.body.cityID.match(regex)) {
-        const city = new City({
+
+    const city = new City({
         cityID: req.body.cityID,
         cityName: req.body.cityName
     });
@@ -21,11 +19,7 @@ exports.postCity = (req, res) => {
         }
         res.send({ message: "City was created successfully!" });
     })
-    }
-    else {
-        res.send({message: "Mã không hợp lệ. Vui lòng kiểm tra lại!"})
-    }
-    
+
 }
 
 exports.deleteCity = (req, res) => {
@@ -59,7 +53,16 @@ exports.putCity = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-            if(city){
+            if (city) {
+
+                if (req.body.password) {
+                    userController.editUser_password(city.cityID, req.body.newPassword)
+                }
+
+                if (req.body.timeStart && req.body.timeFinish) {
+                    userController.editUser_time(city.cityID, req.body.timeStart, req.body.timeFinish)
+                }
+
                 if (req.body.cityID) {
                     var re = "^";
                     var result = re.concat(city.cityID)
@@ -69,8 +72,9 @@ exports.putCity = (req, res) => {
                     locationController.putWards(regex, req.body.cityID)
                     locationController.putVillages(regex, req.body.cityID)
                     userController.editUsers_username(regex, req.body.cityID)
-    
+
                 }
+
                 if (req.body.cityName) {
                     city.cityName = req.body.cityName;
                 }
@@ -81,29 +85,9 @@ exports.putCity = (req, res) => {
                     }
                     res.send({ message: "City was edited" });
                 })
-               
-            }
-            
-        })
 
-    City.findById(req.body._id)
-        .exec((err, city) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            if(req.body.timeStart&& req.body.timeFinish){
-                userController.editUser_time(city.cityID, req.body.timeStart, req.body.timeFinish)
-            }
-            if(req.body.newPassword){
-                result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
-                regex = new RegExp(result)
-                if (req.body.newPassword.match(regex)) {
-                userController.editUser_password(city.cityID, req.body.newPassword)
-                }
             }
         })
-
 
 
 }

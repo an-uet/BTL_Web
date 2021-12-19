@@ -1,5 +1,6 @@
 const db = require("../models");
 const City = db.city;
+const User = db.user;
 
 
 
@@ -72,11 +73,26 @@ checkCityExistedByCityID = (req, res, next) => {
     });
 };
 
+checkValidCityID = (req, res, next) => {
+    re = "^[0-9]{2}$"
+    regex = new RegExp(re, "g")
+    if(req.body.cityID) {
+        if(req.body.cityID.match(regex)) {
+            next();
+        }
+        else {
+            res.status(400).send({message: "mã của tỉnh/thành phố không đúng dịnh dạng"});
+            return;
+        }
+    }
+}
+
 const checkCity = {
     checkDuplicateCity,
     checkDuplicateCityID,
     checkCityExisted,
-    checkCityExistedByCityID
+    checkCityExistedByCityID,
+    checkValidCityID
    
   };
   

@@ -38,9 +38,25 @@ checkCitizenExisted = (req, res, next) => {
     });
 };
 
+checkCitizenExistedById = (req, res, next) => {
+    // CitizenID
+    Citizen.findById(req.body._id).exec((err, citizen) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        if (!citizen) {
+            res.status(400).send({ message: "Failed! citizen is not exited!" });
+            return;
+        }
+        next();
+    });
+};
+
 const checkCitizen = {
     checkDuplicateCitizenID,
-    checkCitizenExisted
+    checkCitizenExisted,
+    checkCitizenExistedById
 
 };
 

@@ -1,5 +1,6 @@
 const db = require("../models");
 const Village = db.village;
+const User = db.user;
 
 
 //kiểm tra trùng lặp thành phố
@@ -71,11 +72,35 @@ checkVillageExistedByVillageID = (req, res, next) => {
     });
 };
 
+
+checkValidVillageID = (req,res,next) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        var name = user.username;
+        re = "+[0-9]{2}$";
+        result = name.concat(re);
+        regex = new RegExp(result, "g")
+        if(req.body.villageID){
+           if (req.body.villageID.match(regex)) {
+            next();
+        } 
+        else {
+            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
+        }
+    
+        }
+    })    
+
+}
 const checkVillage = {
     checkDuplicateVillage,
     checkDuplicateVillageID,
     checkVillageExisted,
-    checkVillageExistedByVillageID
+    checkVillageExistedByVillageID,
+    checkValidVillageID
 
 };
 

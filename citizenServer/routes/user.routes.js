@@ -14,7 +14,9 @@ module.exports = function (app) {
 
   app.post("/A1", [
     verifySignUp.checkDuplicateUsername,
-    verifySignUp.checkRolesExisted],
+    verifySignUp.checkRolesExisted,
+    verifySignUp.checkValidpassword
+  ],
     controller.signupA1
   )
 
@@ -25,6 +27,8 @@ module.exports = function (app) {
       authJwt.verifyToken, authJwt.isA1,
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
+      verifySignUp.checkValidpassword
+      
     ],
     controller.signupA2
   );
@@ -36,10 +40,13 @@ module.exports = function (app) {
   //A2 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A3
   app.post("/A3",
     [
-      authJwt.verifyToken, authJwt.isA2,
+      authJwt.verifyToken, 
+      authJwt.checkTime2Work,
+      authJwt.isA2,
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
-      authJwt.checkTime2Work
+      verifySignUp.checkValidpassword
+    
     ],
     controller.signupA3
   );
@@ -53,9 +60,11 @@ module.exports = function (app) {
       authJwt.verifyToken,
       //xác nhận là A3
       authJwt.isA3,
+      authJwt.checkTime2Work,
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
-      authJwt.checkTime2Work
+      verifySignUp.checkValidpassword
+      
     ],
     controller.signupB1
   );
@@ -69,7 +78,8 @@ module.exports = function (app) {
       authJwt.verifyToken, authJwt.isB1,
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
-      authJwt.checkTime2Work
+      authJwt.checkTime2Work,
+      verifySignUp.checkValidpassword
     ],
     controller.signupB2
   );

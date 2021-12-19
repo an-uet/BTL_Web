@@ -14,12 +14,7 @@ const { village } = require("../models");
 
 
 //signup A1
-
 exports.signupA1 = (req, res) => {
-
-  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
-  regex = new RegExp(result)
-  if (req.body.password.match(regex)) {
     const user = new User({
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
@@ -51,23 +46,12 @@ exports.signupA1 = (req, res) => {
       });
 
     });
-
-  }
-
-  else {
-    res.status(400).send({ message: "mat khau khong hop le" })
-  }
-
 };
 
 
 //signup user: A2
 exports.signupA2 = (req, res) => {
 
-  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
-  regex = new RegExp(result)
-
-  if (req.body.password.match(regex)) {
     const user = new User({
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
@@ -127,18 +111,12 @@ exports.signupA2 = (req, res) => {
 
       });
     });
-  }
-  else {
-    res.status(400).send({ message: "mat khau khong hop le" })
-  }
 
 };
 
 //signup user: A3
 exports.signupA3 = (req, res) => {
-  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
-  regex = new RegExp(result)
-  if (req.body.password.match(regex)) {
+ 
     const user = new User({
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
@@ -166,7 +144,7 @@ exports.signupA3 = (req, res) => {
         return;
       }
 
-      user.createBy = temp.username
+      user.createBy = temp.username;
     })
 
     Role.findOne({ name: "A3" }, (err, role) => {
@@ -184,6 +162,7 @@ exports.signupA3 = (req, res) => {
         }
         if (district) {
           user.district = district._id;
+          user.city = district.city
           user.save(err => {
             if (err) {
               res.status(500).send({ message: err });
@@ -200,19 +179,13 @@ exports.signupA3 = (req, res) => {
 
       });
     });
-  }
-  else {
-    res.status(400).send({ message: "mat khau khong hop le" })
-  }
+  
 
 };
 
 
 //signup user: B1
 exports.signupB1 = (req, res) => {
-  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
-  regex = new RegExp(result)
-  if (req.body.password.match(regex)) {
     const user = new User({
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
@@ -257,6 +230,8 @@ exports.signupB1 = (req, res) => {
         }
         if (ward) {
           user.ward = ward._id;
+          user.city = ward.city;
+          user.district = ward.district;
           user.save(err => {
             if (err) {
               res.status(500).send({ message: err });
@@ -272,18 +247,10 @@ exports.signupB1 = (req, res) => {
 
       });
     });
-
-  }
-  else {
-    res.status(400).send({ message: "mat khau khong hop le" })
-  }
 };
 
 //signup user: B2
 exports.signupB2 = (req, res) => {
-  result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
-  regex = new RegExp(result)
-  if (req.body.password.match(regex)) {
     const user = new User({
       username: req.body.username,
       password: bcrypt.hashSync(req.body.password, 8),
@@ -327,6 +294,9 @@ exports.signupB2 = (req, res) => {
         }
         if (village) {
           user.village = village._id;
+          user.city = village.city;
+          user.district = village.district;
+          user.ward = village.ward;
           user.save(err => {
             if (err) {
               res.status(500).send({ message: err });
@@ -342,10 +312,7 @@ exports.signupB2 = (req, res) => {
 
       });
     });
-  }
-  else {
-    res.status(400).send({ message: "mat khau khong hop le" })
-  }
+ 
 };
 
 
@@ -487,6 +454,7 @@ exports.signin = (req, res) => {
         isActive: user.active,
         isComplete: user.complete
       });
+   
     });
 };
 

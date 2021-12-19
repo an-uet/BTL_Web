@@ -1,5 +1,6 @@
-const { authJwt, checkCity } = require("../middlewares");
+const { authJwt, checkCity, verifySignUp } = require("../middlewares");
 const cityController = require("../controllers/city.controller");
+
 
 
 //routes
@@ -8,9 +9,13 @@ module.exports = function (app) {
     //cấp mã.
     app.post("/city",
         [
-            authJwt.verifyToken, authJwt.isA1,
+            authJwt.verifyToken, 
+            authJwt.checkTime2Work,
+            authJwt.isA1,
             checkCity.checkDuplicateCity,
-            checkCity.checkDuplicateCityID
+            checkCity.checkDuplicateCityID,
+            checkCity.checkValidCityID
+            
         ],
         cityController.postCity
 
@@ -19,9 +24,11 @@ module.exports = function (app) {
     //xóa mã: truyền vào _id.
     app.delete("/city",
         [
-            authJwt.verifyToken, 
+            authJwt.verifyToken,
+            authJwt.checkTime2Work, 
             authJwt.isA1, 
-            checkCity.checkCityExistedByCityID
+            checkCity.checkCityExistedByCityID,
+            
         ],
         cityController.deleteCity
     )
@@ -33,7 +40,11 @@ module.exports = function (app) {
             authJwt.verifyToken, 
             authJwt.isA1, 
             checkCity.checkDuplicateCityID,
+            checkCity.checkDuplicateCity,
             checkCity.checkCityExisted,
+            verifySignUp.checkValidpassword,
+            checkCity.checkValidCityID
+
            
         ],
         cityController.putCity

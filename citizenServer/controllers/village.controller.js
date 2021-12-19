@@ -7,62 +7,45 @@ const citizenController = require('./citizen.controller')
 
 
 exports.postVillage = (req, res) => {
-    User.findById(req.userId).exec((err, user) => {
+
+    const village = new Village({
+        villageID: req.body.villageID,
+        villageName: req.body.villageName
+    });
+    village.save((err, village) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
-        var name = user.username;
-        re = "+[0-9]{2}$";
-        result = name.concat(re);
-        regex = new RegExp(result, "g")
-        if (req.body.villageID.match(regex)) {
-            const village = new Village({
-                villageID: req.body.villageID,
-                villageName: req.body.villageName
-            });
-            village.save((err, village) => {
+
+        User.findById(req.userId).exec((err, user) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            village.ward = user.ward;
+            //console.log(user)
+            var id = user.ward;
+            //console.log(id)
+            Ward.findById(id).exec((err, ward) => {
                 if (err) {
                     res.status(500).send({ message: err });
                     return;
                 }
-        
-                User.findById(req.userId).exec((err, user) => {
+                village.district = ward.district;
+                village.city = ward.city;
+                village.save(err => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    village.ward = user.ward;
-                    //console.log(user)
-                    var id = user.ward;
-                    //console.log(id)
-                    Ward.findById(id).exec((err, ward) => {
-                        if (err) {
-                            res.status(500).send({ message: err });
-                            return;
-                        }
-                        village.district = ward.district;
-                        village.city = ward.city;
-                        village.save(err => {
-                            if (err) {
-                                res.status(500).send({ message: err });
-                                return;
-                            }
-                            res.send({ message: "village was created successfully!" });
-                        });
-                    })
+                    res.send({ message: "village was created successfully!" });
                 });
-        
             })
+        });
 
-        }
-        else {
-            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
-        }
     })
-    
 }
-
 
 exports.deleteVillage = (req, res) => {
     var re = "^";
@@ -78,8 +61,8 @@ exports.deleteVillage = (req, res) => {
             citizenController.deleteCitizensOfVillage(village._id)
 
         })
-        userController.deleteUsers(regax)
-        res.send({ message: "Village was deleted" });
+    userController.deleteUsers(regax)
+    res.send({ message: "Village was deleted" });
 }
 
 exports.putVillage = (req, res) => {
@@ -89,6 +72,15 @@ exports.putVillage = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
+
+            if (req.body.newPassword) {
+                userController.editUser_password(village.villageID, req.body.newPassword)
+            }
+
+            if (req.body.timeStart && req.body.timeFinish) {
+                userController.editUser_time(village.villageID, req.body.timeStart, req.body.timeFinish)
+            }
+
             if (req.body.villageID) {
                 var re = "^";
                 var result = re.concat(village.villageID)
@@ -108,20 +100,6 @@ exports.putVillage = (req, res) => {
                 res.send({ message: "village was edited" });
             })
 
-        })
-
-        Village.findById(req.body._id)
-        .exec((err, village) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            if(req.body.timeStart&& req.body.timeFinish){
-                userController.editUser_time(village.villageID, req.body.timeStart, req.body.timeFinish)
-            }
-            if(req.body.newPassword){
-                userController.editUser_password(village.villageID, req.body.newPassword)
-            }
         })
 }
 

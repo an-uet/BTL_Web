@@ -33,9 +33,24 @@ checkRolesExisted = (req, res, next) => {
   next();
 };
 
+checkValidpassword = (req, res, next) => {
+  if(req.body.password) {
+    result = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})"
+    regex = new RegExp(result)
+    if (req.body.password.match(regex)) {
+      next();
+    }
+    else {
+      res.status(400).send({message: "Mật khẩu bắt buộc có: tối thiểu 8 ký tự, có ít nhất một chữ cái in hoa, một chữ cái in thường, một ký tự đặc biệt"});
+      return;
+    }
+  }
+}
+
 const verifySignUp = {
   checkDuplicateUsername,
   checkRolesExisted,
+  checkValidpassword
  
 };
 

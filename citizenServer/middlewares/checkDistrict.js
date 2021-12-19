@@ -1,4 +1,5 @@
 const db = require("../models");
+const User = require("../models/user.model");
 const District = db.district;
 
 
@@ -58,6 +59,7 @@ checkDistrictExisted = (req, res, next) => {
 
 checkDistrictExistedByDistrictID = (req, res, next) => {
     // districtID
+    
     District.findOne({districtID: req.body.districtID}).exec((err, district) => {
         if (err) {
             res.status(500).send({ message: err });
@@ -71,11 +73,34 @@ checkDistrictExistedByDistrictID = (req, res, next) => {
     });
 };
 
+checkValidDistrictID = (req,res, next) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        if(req.body.districtID) {
+            var re1 = "^";
+            var re2 = "+[0-9]{2}$"
+            var temp = re1.concat(user.username)
+            var result = temp.concat(re2)
+            if(req.body.districtID.match(result))
+            {
+                next();
+            }
+        else {
+                res.status(400).send({ message: "Mã phải bắt đầu bằng: " + user.username + ". Vui lòng kiểm tra lại!" })
+            }
+        }
+    })
+}
+
 const checkDistrict = {
     checkDuplicateDistrict,
     checkDuplicateDistrictID,
     checkDistrictExisted,
-    checkDistrictExistedByDistrictID
+    checkDistrictExistedByDistrictID,
+    checkValidDistrictID
    
   };
   

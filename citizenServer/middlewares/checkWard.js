@@ -1,5 +1,6 @@
 const db = require("../models");
 const Ward = db.ward;
+const User = db.user;
 
 
 //kiểm tra trùng lặp thành phố
@@ -71,12 +72,34 @@ checkWardExistedByWardID = (req, res, next) => {
     });
 };
 
+checkValidWardID = (req,res,next) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        var name = user.username;
+        re = "+[0-9]{2}$";
+        result = name.concat(re);
+        regex = new RegExp(result, "g")
+        if(req.body.wardID){
+            if (req.body.wardID.match(regex)) {
+                next();
+        }
+        else {
+            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
+        }
+        }
+    })
+}
+
 
 const checkWard = {
     checkDuplicateWard,
     checkDuplicateWardID,
     checkWardExisted,
-    checkWardExistedByWardID
+    checkWardExistedByWardID,
+    checkValidWardID
    
   };
   

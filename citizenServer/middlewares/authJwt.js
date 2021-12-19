@@ -186,59 +186,36 @@ isB2 = (req, res, next) => {
   });
 };
 
-/*  
-checkTime2Work = (req,res,next) => {
+isB2orB1 = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
     }
-    var currentTime = new Date();
-      if (user.timeStart && user.timeFinish) {
-        var time1 = new Date(user.timeStart);
-        var time2 = new Date(user.timeFinish);
-        if (time1 <= currentTime && currentTime <= time2) {
-          user.active = 1;
-          next();
-          return;
-        }
-        else {
-          user.active = 0
-        }
 
-        
-      }
-      if (user.active == 0) {
-        User.find({ createBy: user.username }).exec((err, arr) => {
-          if (err) {
-            console.log("loi");
-            return;
-          }
-          arr.forEach(function (temp) {
-            temp.active = 0;
-            temp.save(err => {
-              if (err) {
-                res.status(500).send({ message: err });
-                return;
-              }
-              console.log("thanh cong")
-            });
-          })
-        })
-      }
-   
-      user.save(err => {
+    Role.find(
+      {
+        _id: { $in: user.roles }
+      },
+      (err, roles) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-      });
-    
-    res.status(403).send({ message: "time up!" });
-    return;
-  })
-}
-*/
+
+        for (let i = 0; i < roles.length; i++) {
+          if (roles[i].name === "B2" || roles[i].name === "B1") {
+            next();
+            return;
+          }
+        }
+
+        res.status(403).send({ message: "Require B2 Role!" });
+        return;
+      }
+    );
+  });
+};
 
 checkTime2Work = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
@@ -248,10 +225,12 @@ checkTime2Work = (req, res, next) => {
     }
     if(user.active == 1) {
       next();
+    }
+    else {
+      res.status(403).send({ message: "time up!" });
       return;
     }
-    res.status(403).send({ message: "time up!" });
-    return;
+   
   })
 }
 const authJwt = {
@@ -261,6 +240,7 @@ const authJwt = {
   isA3,
   isB1,
   isB2,
+  isB2orB1,
   checkTime2Work
 };
 module.exports = authJwt;

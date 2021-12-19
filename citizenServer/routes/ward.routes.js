@@ -1,4 +1,4 @@
-const { authJwt, checkWard } = require("../middlewares");
+const { authJwt, checkWard, verifySignUp } = require("../middlewares");
 const wardController = require("../controllers/ward.controller")
 const userController = require("../controllers/user.controller")
 module.exports = function (app) {
@@ -7,8 +7,10 @@ module.exports = function (app) {
     app.post("/ward",
         [
             authJwt.verifyToken, authJwt.isA3,
+            authJwt.checkTime2Work,
             checkWard.checkDuplicateWard,
-            checkWard.checkDuplicateWardID
+            checkWard.checkDuplicateWardID,
+            checkWard.checkValidWardID
         ],
         wardController.postWard
 
@@ -16,12 +18,25 @@ module.exports = function (app) {
 
     //xóa mã: truyền vào wardID.// xu li khi xoa ma thi xoas tai khoan hay khong?
     app.delete("/ward",
-        [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExistedByWardID],
+        [
+            authJwt.verifyToken,
+            authJwt.checkTime2Work,
+            authJwt.isA3,
+            checkWard.checkWardExistedByWardID
+        ],
         wardController.deleteWard
 
     )
     app.put("/ward",
-        [authJwt.verifyToken, authJwt.isA3, checkWard.checkWardExisted, checkWard.checkDuplicateWardID],
+        [
+            authJwt.verifyToken, authJwt.isA3,
+            authJwt.checkTime2Work,
+            checkWard.checkWardExisted,
+            checkWard.checkDuplicateWardID,
+            checkWard.checkValidWardID,
+            verifySignUp.checkValidpassword
+
+        ],
         wardController.putWard
     )
 
