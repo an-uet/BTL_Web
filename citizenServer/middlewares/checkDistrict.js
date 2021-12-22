@@ -8,6 +8,7 @@ checkDuplicateDistrict = (req, res, next) => {
     // districtname
     District.findOne({
         districtName: req.body.districtName,
+        districtID: req.body.districtID
     }).exec((err, district) => {
         if (err) {
             res.status(500).send({ message: err });
@@ -15,7 +16,7 @@ checkDuplicateDistrict = (req, res, next) => {
         }
 
         if (district) {
-            res.status(400).send({ message: "Failed! districtName is already exited!" });
+            res.status(400).send({ message: "Failed! district is already exited!" });
             return;
         }
         next();
@@ -59,8 +60,8 @@ checkDistrictExisted = (req, res, next) => {
 
 checkDistrictExistedByDistrictID = (req, res, next) => {
     // districtID
-    
-    District.findOne({districtID: req.body.districtID}).exec((err, district) => {
+
+    District.findOne({ districtID: req.body.districtID }).exec((err, district) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -73,26 +74,54 @@ checkDistrictExistedByDistrictID = (req, res, next) => {
     });
 };
 
-checkValidDistrictID = (req,res, next) => {
-    User.findById(req.userId).exec((err, user) => {
+checkValidDistrictID = (req, res, next) => {
+    if(req.body.districtID){
+        User.findById(req.userId).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
-        if(req.body.districtID) {
+        if (req.body.districtID) {
             var re1 = "^";
             var re2 = "+[0-9]{2}$"
             var temp = re1.concat(user.username)
             var result = temp.concat(re2)
-            if(req.body.districtID.match(result))
-            {
+            if (req.body.districtID.match(result)) {
                 next();
             }
-        else {
+            else {
                 res.status(400).send({ message: "Mã phải bắt đầu bằng: " + user.username + ". Vui lòng kiểm tra lại!" })
             }
         }
-    })
+    }) 
+    }
+    else {
+        next();
+    }
+   
+}
+
+checkDistrictNameExisted = (req, res, next) => {
+    if (req.body.districtName) {
+        District.findOne({
+            districtName: req.body.districtName,
+        }).exec((err, district) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+
+            if (!district) {
+                res.status(400).send({ message: "Không tìm thấy tên quận/huyện" });
+                return;
+            }
+            next();
+        });
+    }
+    else {
+        next()
+    }
+
 }
 
 const checkDistrict = {
@@ -100,8 +129,9 @@ const checkDistrict = {
     checkDuplicateDistrictID,
     checkDistrictExisted,
     checkDistrictExistedByDistrictID,
-    checkValidDistrictID
-   
-  };
-  
+    checkValidDistrictID,
+    checkDistrictNameExisted
+
+};
+
 module.exports = checkDistrict;

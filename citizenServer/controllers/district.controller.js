@@ -69,8 +69,8 @@ exports.putDistrict = (req, res) => {
                 return;
             }
             if (district) {
-                if (req.body.newPassword.match(regex)) {
-                    userController.editUser_password(district.districtID, req.body.newPassword)
+                if (req.body.password.match(regex)) {
+                    userController.editUser_password(district.districtID, req.body.password)
                 }
                 if (req.body.timeStart && req.body.timeFinish) {
                     userController.editUser_time(district.districtID, req.body.timeStart, req.body.timeFinish)

@@ -17,7 +17,7 @@ exports.postCity = (req, res) => {
             res.status(500).send({ message: err });
             return;
         }
-        res.send({ message: "City was created successfully!" });
+        res.send(city);
     })
 
 }
@@ -54,9 +54,8 @@ exports.putCity = (req, res) => {
                 return;
             }
             if (city) {
-
                 if (req.body.password) {
-                    userController.editUser_password(city.cityID, req.body.newPassword)
+                    userController.editUser_password(city.cityID, req.body.password)
                 }
 
                 if (req.body.timeStart && req.body.timeFinish) {
@@ -86,6 +85,9 @@ exports.putCity = (req, res) => {
                     res.send({ message: "City was edited" });
                 })
 
+            }
+            else {
+                res.status(400).send({message: "loi"})
             }
         })
 

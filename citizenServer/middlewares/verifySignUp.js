@@ -45,6 +45,9 @@ checkValidpassword = (req, res, next) => {
       return;
     }
   }
+  else {
+    next();
+  }
 }
 
 const verifySignUp = {

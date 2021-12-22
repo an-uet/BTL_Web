@@ -1,5 +1,5 @@
 const db = require("../models");
-const { authJwt } = require("../middlewares");
+const { authJwt, checkDistrict, checkCity, checkVillage, checkWard } = require("../middlewares");
 const { checkCitizen } = require("../middlewares");
 const citizenController = require("../controllers/citizen.controller")
 
@@ -50,14 +50,7 @@ module.exports = function (app) {
         citizenController.putCitizen
     )
 
-    //lay danh sach cu dan ca nuoc.
-    app.get("/allCitizens",
-        [
-            authJwt.verifyToken,
-            authJwt.isA1
-        ],
-        citizenController.getAllCitizens
-    )
+
 
     //lay danh sach citizens
     app.get("/citizens",
@@ -68,8 +61,25 @@ module.exports = function (app) {
     )
 
 
-    app.get("/caculateOld",
-        citizenController.caculationOld
+    app.get("/statistical",
+        [
+            authJwt.verifyToken
+        ],
+        citizenController.statisticalCitizens
     )
+
+    app.post("/search",
+        [
+            authJwt.verifyToken,
+            checkCity.checkCityNameExisted,
+            checkDistrict.checkDistrictNameExisted,
+            checkWard.checkWardNameExisted,
+            checkVillage.checkVillageNameExisted
+        ],
+        citizenController.searchAddress
+    )
+
+
+
 
 }

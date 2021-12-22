@@ -10,9 +10,10 @@ module.exports = function (app) {
             authJwt.verifyToken, 
             authJwt.checkTime2Work,
             authJwt.isA2,
+            checkDistrict.checkValidDistrictID,
             checkDistrict.checkDuplicateDistrictID,
-            checkDistrict.checkDuplicateDistrict,
-            checkDistrict.checkValidDistrictID
+            //checkDistrict.checkDuplicateDistrict,
+            
         ],
         districtController.postDistrict
     );

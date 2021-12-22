@@ -59,7 +59,7 @@ checkWardExisted = (req, res, next) => {
 
 checkWardExistedByWardID = (req, res, next) => {
     // wardID
-    Ward.findOne({wardID: req.body.wardID}).exec((err, ward) => {
+    Ward.findOne({ wardID: req.body.wardID }).exec((err, ward) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -72,7 +72,8 @@ checkWardExistedByWardID = (req, res, next) => {
     });
 };
 
-checkValidWardID = (req,res,next) => {
+checkValidWardID = (req, res, next) => {
+if(req.body.wardID){
     User.findById(req.userId).exec((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
@@ -82,15 +83,43 @@ checkValidWardID = (req,res,next) => {
         re = "+[0-9]{2}$";
         result = name.concat(re);
         regex = new RegExp(result, "g")
-        if(req.body.wardID){
+        
             if (req.body.wardID.match(regex)) {
                 next();
-        }
-        else {
-            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
-        }
-        }
+            }
+            else {
+                res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
+            }
+        
     })
+}
+else {
+    next();
+}
+    
+}
+
+checkWardNameExisted = (req, res, next) => {
+    if (req.body.wardName) {
+        Ward.findOne({
+            wardName: req.body.wardName,
+        }).exec((err, ward) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+
+            if (!ward) {
+                res.status(400).send({ message: "Không tìm thấy tên xã/phường" });
+                return;
+            }
+            next();
+        });
+    }
+    else {
+        next();
+    }
+
 }
 
 
@@ -99,8 +128,9 @@ const checkWard = {
     checkDuplicateWardID,
     checkWardExisted,
     checkWardExistedByWardID,
-    checkValidWardID
-   
-  };
-  
+    checkValidWardID,
+    checkWardNameExisted
+
+};
+
 module.exports = checkWard;

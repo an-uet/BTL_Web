@@ -10,7 +10,7 @@ module.exports = function (app) {
             authJwt.checkTime2Work,
             checkWard.checkDuplicateWard,
             checkWard.checkDuplicateWardID,
-            checkWard.checkValidWardID
+           // checkWard.checkValidWardID
         ],
         wardController.postWard
 

@@ -24,7 +24,7 @@ module.exports = function (app) {
         [authJwt.verifyToken,
         authJwt.isB1,
         authJwt.checkTime2Work,
-        checkVillage.checkVillageExistedByVillageID
+       // checkVillage.checkVillageExistedByVillageID
         ],
         villageController.deleteVillage
     )
@@ -33,11 +33,12 @@ module.exports = function (app) {
         [
             authJwt.verifyToken,
             authJwt.isB1,
-            authJwt.checkTime2Work,
+           authJwt.checkTime2Work,
+           checkVillage.checkValidVillageID,
             checkVillage.checkVillageExisted,
             checkVillage.checkDuplicateVillageID,
             verifySignUp.checkValidpassword,
-            checkVillage.checkValidVillageID
+            
         ],
         villageController.putVillage
     )

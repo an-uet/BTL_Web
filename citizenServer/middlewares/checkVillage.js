@@ -74,33 +74,64 @@ checkVillageExistedByVillageID = (req, res, next) => {
 
 
 checkValidVillageID = (req,res,next) => {
-    User.findById(req.userId).exec((err, user) => {
+    if(req.body.villageID){
+        User.findById(req.userId).exec((err, user) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            var name = user.username;
+            re = "+[0-9]{2}$";
+            result = name.concat(re);
+            regex = new RegExp(result, "g")
+            
+               if (req.body.villageID.match(regex)) {
+                next();
+            } 
+            else {
+                res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
+            }
+        
+            
+        })
+    }
+    else {
+        next();
+    }
+        
+
+}
+
+checkVillageNameExisted = (req,res,next) => {
+    if(req.body.villageName)
+    {
+        Village.findOne({
+        villageName: req.body.villageName,
+    }).exec((err, village) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
-        var name = user.username;
-        re = "+[0-9]{2}$";
-        result = name.concat(re);
-        regex = new RegExp(result, "g")
-        if(req.body.villageID){
-           if (req.body.villageID.match(regex)) {
-            next();
-        } 
-        else {
-            res.status(400).send({ message: "Mã phải bắt đầu bằng: " + name + ". Vui lòng kiểm tra lại!" })
-        }
-    
-        }
-    })    
 
+        if (!village) {
+            res.status(400).send({ message: "Không tìm thấy tên làng" });
+            return;
+        }
+        next();
+    });
+    }
+    else {
+        next();
+    }
+    
 }
 const checkVillage = {
     checkDuplicateVillage,
     checkDuplicateVillageID,
     checkVillageExisted,
     checkVillageExistedByVillageID,
-    checkValidVillageID
+    checkValidVillageID,
+    checkVillageNameExisted
 
 };
 

@@ -28,7 +28,7 @@ module.exports = function (app) {
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
       verifySignUp.checkValidpassword
-      
+
     ],
     controller.signupA2
   );
@@ -40,13 +40,13 @@ module.exports = function (app) {
   //A2 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A3
   app.post("/A3",
     [
-      authJwt.verifyToken, 
+      authJwt.verifyToken,
       authJwt.checkTime2Work,
       authJwt.isA2,
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
       verifySignUp.checkValidpassword
-    
+
     ],
     controller.signupA3
   );
@@ -64,12 +64,12 @@ module.exports = function (app) {
       verifySignUp.checkDuplicateUsername,
       verifySignUp.checkRolesExisted,
       verifySignUp.checkValidpassword
-      
+
     ],
     controller.signupB1
   );
 
-  
+
 
 
   //B1 sau khi đăng nhập thành công thì có thể cấp tài khoản cho B2
@@ -86,12 +86,24 @@ module.exports = function (app) {
 
 
   //signin 
-app.post("/signin", controller.signin);
+  app.post("/signin", controller.signin);
 
 
-app.get("/account",
-[authJwt.verifyToken],
-userController.getAccount);
+  app.get("/account",
+    [
+      authJwt.verifyToken
+    ],
+    userController.getAccount);
+
+    
+app.post("/completeTheWork",
+[
+  authJwt.verifyToken,
+  authJwt.isB1
+],
+userController.completeTheWork)
+
 };
+
 
 

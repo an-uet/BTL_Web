@@ -7,7 +7,8 @@ const User = db.user;
 //kiểm tra trùng lặp thành phố
 checkDuplicateCity = (req, res, next) => {
     // cityname
-    City.findOne({
+   
+        City.findOne({
         cityName: req.body.cityName,
     }).exec((err, city) => {
         if (err) {
@@ -21,12 +22,15 @@ checkDuplicateCity = (req, res, next) => {
         }
         next();
     });
+    
+    
 };
 
 //kiểm tra trùng lặp mã
 checkDuplicateCityID = (req, res, next) => {
     // cityID
-    City.findOne({
+   
+        City.findOne({
         cityID: req.body.cityID,
     }).exec((err, city) => {
         if (err) {
@@ -40,12 +44,15 @@ checkDuplicateCityID = (req, res, next) => {
         }
         next();
     });
+    
+    
 };
 
 //kiểm tra tồn tại thành phố/ tỉnh hay không:
 checkCityExisted = (req, res, next) => {
     // cityID
-    City.findById(req.body._id).exec((err, city) => {
+    
+        City.findById(req.body._id).exec((err, city) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -56,11 +63,14 @@ checkCityExisted = (req, res, next) => {
         }
         next();
     });
+    
+    
 };
 
 checkCityExistedByCityID = (req, res, next) => {
     // cityID
-    City.findOne({cityID: req.body.cityID}).exec((err, city) => {
+    
+        City.findOne({cityID: req.body.cityID}).exec((err, city) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -71,6 +81,8 @@ checkCityExistedByCityID = (req, res, next) => {
         }
         next();
     });
+    
+    
 };
 
 checkValidCityID = (req, res, next) => {
@@ -85,6 +97,33 @@ checkValidCityID = (req, res, next) => {
             return;
         }
     }
+    else {
+        next();
+    }
+}
+
+checkCityNameExisted = (req,res,next) => {
+    if(req.body.cityName)
+    {
+        City.findOne({
+        cityName: req.body.cityName,
+    }).exec((err, city) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        if (!city) {
+            res.status(400).send({ message: "Không tìm thấy tên tỉnh/thành phố" });
+            return;
+        }
+        next();
+    });
+    }
+    else {
+        next()
+    }
+    
 }
 
 const checkCity = {
@@ -92,7 +131,8 @@ const checkCity = {
     checkDuplicateCityID,
     checkCityExisted,
     checkCityExistedByCityID,
-    checkValidCityID
+    checkValidCityID,
+    checkCityNameExisted
    
   };
   

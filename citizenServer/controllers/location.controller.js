@@ -122,20 +122,67 @@ function putVillages(regex, ID) {
   })
 }
 
-getAllLocation = (req, res) => {
-  var list = []
-  City.find().exec((err,citis) => {
-    citis.forEach(city => {
-      var oneCity = []
-      District.find().exec((er, districts) => {
-        districts.forEach(district => {
-          if(district.city = city._id){
-            oneCity.push(district);
-          }
-        });
-      })
-      list.push(oneCity)
-    });
+function getDistrict(city_id) {
+var list 
+  District.find({ city: city_id })
+    .exec((err, districts) => {
+      list = {districts: district.name}
+    })
+    return list;
+    console.log(list)
+}
+
+exports.getLocation = (req, res) => {
+  User.findById(req.userId).exec((err, user) => {
+      if (err) {
+          res.status(500).send({ message: err });
+          return;
+      }
+      //check city account
+      re1 = "^[0-9]{2}$"
+      regex1 = new RegExp(re1, "g")
+
+      //check district account
+      re2 = "^[0-9]{4}$"
+      regex2 = new RegExp(re2, "g")
+
+      //check ward account
+      re3 = "^[0-9]{6}$"
+      regex3 = new RegExp(re3, "g")
+
+      //check village account
+      re4 = "^[0-9]{8}$"
+      regex4 = new RegExp(re4, "g")
+
+      //get citizens of city.
+      if (user.username.match(regex1)) {
+        District.find({city: user.city}).exec((err,districts)=> {
+
+        })
+          
+      }
+
+
+      //get citizens of district
+      else if (user.username.match(regex2)) {
+          
+
+      }
+
+
+      //get citizens of ward
+      else if (user.username.match(regex3)) {
+          
+      }
+
+      //get citizens of village
+      else if (user.username.match(regex4)) {
+          
+      }
+      //get all citizens
+      else {
+          
+      }
 
   })
 }

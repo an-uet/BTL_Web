@@ -75,8 +75,8 @@ exports.putWard = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-            if (req.body.newPassword) {
-                userController.editUser_password(ward.wardID, req.body.newPassword)
+            if (req.body.password) {
+                userController.editUser_password(ward.wardID, req.body.password)
             }
 
             if (req.body.timeStart && req.body.timeFinish) {

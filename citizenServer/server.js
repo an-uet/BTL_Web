@@ -32,6 +32,7 @@ app.listen(PORT, () => {
 
 // connect database
 const db = require("./models");
+const { count } = require("./models/user.model");
 const Role = db.role;
 const User = db.user;
 
@@ -120,48 +121,41 @@ function initial() {
       }
     });
   });
-
-/*
+  /*
   User.find({}).exec((err, users) => {
     if (err) {
       console.log("loi");
       return;
     }
-
     users.forEach(function (user) {
-      var sum = 0;
-        User.find({ createBy: user.username }).exec((err, arr) => {
-          if (err) {
-            console.log("loi");
-            return;
-          }
-          arr.forEach(function (temp) {
-            if(temp.complete == 0)
+
+      if(user.roles[0].name == "A3" || user.roles[0].name == "A2")
+      {
+        User.find({createBy: user.username}).exec((err, arr) => {
+          ok = true;
+          arr.forEach(element => {
+            if(element.complete == 0)
             {
-              sum+=1;
+              ok = false;
             }
-          })
-          if(sum == 0) {
-          user.complete = 1;
+          });
+          if(ok == true) {
+            user.complete = 1;
           }
           else{
-            user.complete = 0
+            user.complete = 0;
           }
-        })
-        
           user.save(err => {
-            if (err) {
-              res.status(500).send({ message: err });
-              return;
-            }
-             console.log("thanh cong")
-          });
-      
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+            });
+        })
+      }
     });
-  });
-
-*/
-
+  });*/
+  
 }
 
 

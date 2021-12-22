@@ -24,14 +24,15 @@ exports.postVillage = (req, res) => {
                 return;
             }
             village.ward = user.ward;
-            //console.log(user)
+            console.log(user)
             var id = user.ward;
-            //console.log(id)
+            console.log(id)
             Ward.findById(id).exec((err, ward) => {
                 if (err) {
                     res.status(500).send({ message: err });
                     return;
                 }
+                console.log(ward)
                 village.district = ward.district;
                 village.city = ward.city;
                 village.save(err => {
@@ -72,15 +73,15 @@ exports.putVillage = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-
-            if (req.body.newPassword) {
-                userController.editUser_password(village.villageID, req.body.newPassword)
+            
+            if (req.body.password) {
+                userController.editUser_password(village.villageID, req.body.password)
             }
 
             if (req.body.timeStart && req.body.timeFinish) {
                 userController.editUser_time(village.villageID, req.body.timeStart, req.body.timeFinish)
             }
-
+            
             if (req.body.villageID) {
                 var re = "^";
                 var result = re.concat(village.villageID)
