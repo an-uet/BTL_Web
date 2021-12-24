@@ -4,8 +4,10 @@ const User = db.user;
 const locationController = require('./location.controller');
 const userController = require('./user.controller');
 const citizenController = require('./citizen.controller')
+const verifySignUp = require("../middlewares")
 
 exports.postCity = (req, res) => {
+
 
     const city = new City({
         cityID: req.body.cityID,

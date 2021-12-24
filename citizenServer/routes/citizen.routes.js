@@ -60,13 +60,38 @@ module.exports = function (app) {
         citizenController.getCitizens
     )
 
-
+    // lấy biểu đồ thống kê
     app.get("/statistical",
         [
             authJwt.verifyToken
         ],
         citizenController.statisticalCitizens
     )
+
+    app.get("/population",
+        [
+            authJwt.verifyToken
+        ],
+        citizenController.statisticalCitizenByAddress
+    )
+
+    //tìm kiếm biểu đồ thống kê
+    app.post("/statistical",
+        [
+            authJwt.verifyToken
+        ],
+        citizenController.searchStatisticalCitizens
+    )
+
+    app.post("/population",
+        [
+            authJwt.verifyToken
+        ],
+        citizenController.searchStatisticalAddress
+    )
+
+
+
 
     app.post("/search",
         [

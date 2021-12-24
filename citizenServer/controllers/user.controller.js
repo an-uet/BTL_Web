@@ -1,5 +1,9 @@
 const db = require("../models");
 var bcrypt = require("bcryptjs");
+const City = require("../models/city.model");
+const District = require("../models/district.model");
+const Ward = require("../models/ward.model");
+const Village = require("../models/village.model")
 const User = db.user;
 const Role = db.role;
 
@@ -13,18 +17,26 @@ exports.getAccount = (req, res) => {
     if (user) {
       User.find({ createBy: user.username })
         .populate("roles")
-        .populate("city")
-        .populate("district")
-        .populate("ward")
-        .populate("village")
         .exec((err, users) => {
           if (err) {
             res.status(500).send({ message: err });
             return;
           }
-          res.status(200).send(users);
+          res.status(200).send(
+          User.aggregate(
+            [
+              {
+                $project: {
+                   timeStart: { $dateToString: { format: "%m-%d-%Y", date: "$timeStart" } },
+                   
+                }
+              }
+            ]
+         )
+          );
 
         })
+       
 
     }
     else {
@@ -33,6 +45,168 @@ exports.getAccount = (req, res) => {
 
   });
 };
+
+
+exports.getAccount2 = (req, res) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    if (user) {
+      //check city account
+      re1 = "^[0-9]{2}$"
+      regex1 = new RegExp(re1, "g")
+
+      //check district account
+      re2 = "^[0-9]{4}$"
+      regex2 = new RegExp(re2, "g")
+
+      //check ward account
+      re3 = "^[0-9]{6}$"
+      regex3 = new RegExp(re3, "g")
+
+    
+      if (user.username.match(regex1)) {
+        District.find()
+        .exec((err, districts) => {
+          var account = [];
+          var location = [];
+          var sum = 0
+          
+          districts.forEach(district => {
+
+            User.findOne({ username: district.districtID })
+              .populate("roles")
+              .populate("city")
+              .populate("district")
+              .exec((err, user) => {
+                
+                sum += 1;
+                if (user) {
+                  account.push(user)
+                }
+                else {
+                 location.push(district)
+                }
+                //list.push(element);
+                //console.log(sum + "   " + districts.length)
+                if (districts.length == sum) {
+                  res.status(200).send({
+                    location:location, 
+                    account: account
+                  })
+                }
+              })
+          });
+        })
+      }
+
+      else if (user.username.match(regex2)) {
+        Ward.find()
+        .exec((err, wards) => {
+          var account = [];
+          var location = [];
+          var sum = 0
+          wards.forEach(ward => {
+            User.findOne({ username: ward.wardID })
+            .populate("roles")
+            .populate("city")
+            .populate("district")
+            .populate("ward")
+       
+              .exec((err, user) => {
+                sum += 1;
+                if (user) {
+                  account.push(user)
+                }
+                else {
+                  
+                 location.push(ward)
+                }
+                //console.log(sum + "   " + districts.length)
+                if (wards.length == sum) {
+                  res.status(200).send({
+                    location:location, 
+                    account: account
+                  })
+                }
+              })
+          });
+        })
+      }
+      else if (user.username.match(regex3)) {
+        Village.find()
+        .exec((err, villages) => {
+          var account = [];
+          var location = [];
+          var sum = 0
+          villages.forEach(village => {
+            User.findOne({ username: village.villageID })
+            .populate("roles")
+            .populate("city")
+            .populate("district")
+            .populate("ward")
+            .populate("village")
+              .exec((err, user) => {
+                sum += 1;
+                if (user) {
+                  account.push(user)
+                }
+                else {
+                 location.push(village)
+                }
+                
+                //console.log(sum + "   " + districts.length)
+                if (villages.length == sum) {
+                  res.status(200).send({
+                    location:location, 
+                    account: account
+                  })
+                }
+              })
+          });
+        })
+      }
+
+      else {
+        City.find()
+        .exec((err, citis) => {
+          var account = [];
+          var location = [];
+          var sum = 0
+          citis.forEach(city => {
+            User.findOne({ username: city.cityID })
+            .populate("roles")
+            .populate("city")
+              .exec((err, user) => {
+                sum += 1;
+                if (user) {
+                  account.push(user)
+                }
+                else {
+                 location.push(city)
+                }
+                //console.log(sum + "   " + citis.length)
+                if (citis.length == sum) {
+                  res.status(200).send({
+                    location:location, 
+                    account: account
+                  })
+                }
+              })
+          });
+        })
+
+      }
+
+    }
+    else {
+      res.send({ message: "loi" })
+    }
+
+  });
+}
 
 //xoa nhung tai khoan lien quan
 exports.deleteUsers = (regex) => {
@@ -137,8 +311,8 @@ exports.editUser_time = (ID, newTimeStart, newTimeFinish) => {
 
 //B1 update hoàn thành công việc khai báo cư dân.
 exports.completeTheWork = (req, res) => {
-  if (req.body.completeTheWork == 1) {
-    User.findByIdAndUpdate(req.userId, { complete: 1 }, function (err, user) {
+  if (req.body.completeTheWork == 1 ||req.body.completeTheWork == 0 ) {
+    User.findByIdAndUpdate(req.userId, { complete: req.body.completeTheWork }, function (err, user) {
       if (err) {
         res.status(500).send({ message: err });
         return;
@@ -214,7 +388,7 @@ exports.completeTheWork = (req, res) => {
             }
           });
         });
-      res.status(200).send({ message: "Hoàn thành khai báo cư dân" })
+      res.status(200).send({ message: "cập nhật complete thành công" })
     })
   }
 }

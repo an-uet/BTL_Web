@@ -93,7 +93,7 @@ module.exports = function (app) {
     [
       authJwt.verifyToken
     ],
-    userController.getAccount);
+    userController.getAccount2);
 
     
 app.post("/completeTheWork",
@@ -103,6 +103,8 @@ app.post("/completeTheWork",
 ],
 userController.completeTheWork)
 
+
+app.get("/acc", [authJwt.verifyToken], userController.getAccount)
 };
 
 

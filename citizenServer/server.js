@@ -121,6 +121,8 @@ function initial() {
       }
     });
   });
+
+ 
   /*
   User.find({}).exec((err, users) => {
     if (err) {

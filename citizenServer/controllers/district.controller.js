@@ -28,7 +28,7 @@ exports.postDistrict = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                res.send({ message: "District was created successfully!" });
+                res.send(district);
             });
         })
 

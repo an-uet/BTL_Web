@@ -1,10 +1,12 @@
-const { city, citizen } = require("../models");
+const { city, citizen, district } = require("../models");
 const db = require("../models");
+const { distinct } = require("../models/user.model");
 const User = db.user;
 const Village = db.village;
 const Citizen = db.citizen;
 const City = db.city;
 const Ward = db.ward;
+const District = db.district;
 
 //khai báo cư dân cho B2
 exports.postCitizenForB2 = (req, res) => {
@@ -43,7 +45,7 @@ exports.postCitizenForB2 = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                res.send({ message: "citizen was created successfully!" });
+                res.send(citizen);
             });
         })
     });
@@ -71,7 +73,7 @@ exports.postCitizenForB1 = (req, res) => {
             res.status(500).send({ message: err });
             return;
         }
-        
+
         citizen.ward = user.ward;
         var id = user.ward;
         console.log(id)
@@ -81,7 +83,7 @@ exports.postCitizenForB1 = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-            
+
             console.log("ward: " + ward)
             citizen.city = ward.city;
             citizen.district = ward.district;
@@ -99,7 +101,7 @@ exports.postCitizenForB1 = (req, res) => {
                             res.status(500).send({ message: err });
                             return;
                         }
-                        res.send({ message: "citizen was created successfully!" });
+                        res.send(citizen);
                     });
                 }
                 else {
@@ -111,9 +113,9 @@ exports.postCitizenForB1 = (req, res) => {
                 res.status(400).send({ message: "làng này không tồn tại" })
             }
         })
-        
 
-        
+
+
     });
 }
 
@@ -358,7 +360,7 @@ exports.putCitizen = (req, res) => {
                                                 return;
                                             }
                                             console.log("save villageName ok")
-                                            res.status(200).send({ message: "Citizen was edited!" })
+                                            res.status(200).send(citizen)
                                         });
                                     }
                                     else {
@@ -413,7 +415,7 @@ exports.putCitizen = (req, res) => {
                             res.status(500).send({ message: err });
                             return;
                         }
-                        res.send({ message: "Citizen was edited" });
+                        res.send(citizen);
                     });
 
                 }
@@ -443,38 +445,7 @@ exports.sortName = (req, res) => {
 
 //thống kê
 //theo tuổi
-function caculateOld(citizens) {
-    var sum1 = 0;
-    var sum2 = 0;
-    var sum3 = 0;
-    var current = new Date().getFullYear();
 
-    citizens.forEach(citizen => {
-        var birthday = new Date(citizen.dateOfBirth).getFullYear();
-        var old = current - birthday;
-        if (0 <= old && old <= 14) {
-            sum1 = sum1 + 1;
-        } //dưới độ tuổi lao động
-        else if (15 <= old && old <= 59) {
-            sum2 += 1;
-        } // trong độ tuổi lao động
-        else if (old >= 60) {
-            sum3 += 1; // trên độ tuổi lao động
-        }
-
-
-    })
-    //Hiện số dân đã nhập trên tỉnh/huyện/xã/ làng đó
-    console.log(sum1);
-    console.log(sum2);
-    console.log(sum3);
-
-    return {
-        sum1: sum1,
-        sum2: sum2,
-        sum3: sum3
-    }
-}
 
 function caculateOld2(citizens) {
     var sum1 = 0;
@@ -539,13 +510,13 @@ function caculateOld2(citizens) {
         sum2: sum2,
         sum3: sum3,
         sum4: sum4,
-        sum5:sum5,
-        sum6:sum6,
-        sum7:sum7,
+        sum5: sum5,
+        sum6: sum6,
+        sum7: sum7,
         sum8: sum8,
         sum9: sum9,
-        sum10:sum10,
-        sum11:sum11
+        sum10: sum10,
+        sum11: sum11
     }
 }
 
@@ -602,13 +573,13 @@ exports.statisticalCitizens = (req, res) => {
                             "11-20": age.sum2,
                             "21-30": age.sum3,
                             "31-40": age.sum4,
-                            "41-50":age.sum5,
-                            "51-60":age.sum6,
-                            "61-70":age.sum7,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
                             "71-80": age.sum8,
                             "81-90": age.sum9,
                             "91-100": age.sum10,
-                            ">100":age.sum11,
+                            ">100": age.sum11,
                             male: male,
                             female: female
                         }
@@ -634,13 +605,13 @@ exports.statisticalCitizens = (req, res) => {
                             "11-20": age.sum2,
                             "21-30": age.sum3,
                             "31-40": age.sum4,
-                            "41-50":age.sum5,
-                            "51-60":age.sum6,
-                            "61-70":age.sum7,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
                             "71-80": age.sum8,
                             "81-90": age.sum9,
                             "91-100": age.sum10,
-                            ">100":age.sum11,
+                            ">100": age.sum11,
                             male: male,
                             female: female
                         }
@@ -664,13 +635,13 @@ exports.statisticalCitizens = (req, res) => {
                             "11-20": age.sum2,
                             "21-30": age.sum3,
                             "31-40": age.sum4,
-                            "41-50":age.sum5,
-                            "51-60":age.sum6,
-                            "61-70":age.sum7,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
                             "71-80": age.sum8,
                             "81-90": age.sum9,
                             "91-100": age.sum10,
-                            ">100":age.sum11,
+                            ">100": age.sum11,
                             male: male,
                             female: female
                         }
@@ -690,19 +661,20 @@ exports.statisticalCitizens = (req, res) => {
                     const male = countGender(citizens, "Nữ")
                     const female = countGender(citizens, "Nam")
                     res.status(200).send(
-                        { "0-10": age.sum1,
-                        "11-20": age.sum2,
-                        "21-30": age.sum3,
-                        "31-40": age.sum4,
-                        "41-50":age.sum5,
-                        "51-60":age.sum6,
-                        "61-70":age.sum7,
-                        "71-80": age.sum8,
-                        "81-90": age.sum9,
-                        "91-100": age.sum10,
-                        ">100":age.sum11,
-                        male: male,
-                        female: female
+                        {
+                            "0-10": age.sum1,
+                            "11-20": age.sum2,
+                            "21-30": age.sum3,
+                            "31-40": age.sum4,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
+                            "71-80": age.sum8,
+                            "81-90": age.sum9,
+                            "91-100": age.sum10,
+                            ">100": age.sum11,
+                            male: male,
+                            female: female
                         }
                     )
                 })
@@ -724,13 +696,13 @@ exports.statisticalCitizens = (req, res) => {
                             "11-20": age.sum2,
                             "21-30": age.sum3,
                             "31-40": age.sum4,
-                            "41-50":age.sum5,
-                            "51-60":age.sum6,
-                            "61-70":age.sum7,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
                             "71-80": age.sum8,
                             "81-90": age.sum9,
                             "91-100": age.sum10,
-                            ">100":age.sum11,
+                            ">100": age.sum11,
                             male: male,
                             female: female
                         }
@@ -745,65 +717,64 @@ exports.statisticalCitizens = (req, res) => {
 
 //tìm kiếm cư dân theo một trường thông tin bất kì.
 exports.searchCitizens = (req, res) => {
-    if(req.body.citizenID)
-    {
+    if (req.body.citizenID) {
         Citizen.findOne({ citizenID: req.body.citizenID })
-        .populate("village")
-        .populate("city")
-        .populate("district")
-        .populate("ward")
-        .exec((err, citizen) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.status(200).send(citizen);
-        })
+            .populate("village")
+            .populate("city")
+            .populate("district")
+            .populate("ward")
+            .exec((err, citizen) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.status(200).send(citizen);
+            })
     }
 
-    else if(req,body.name) {
-        Citizen.find({name: req.body.name})
-        .populate("village")
-        .populate("city")
-        .populate("district")
-        .populate("ward")
-        .exec((err, citizens) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.status(200).send(citizens);
-        })
+    else if (req, body.name) {
+        Citizen.find({ name: req.body.name })
+            .populate("village")
+            .populate("city")
+            .populate("district")
+            .populate("ward")
+            .exec((err, citizens) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.status(200).send(citizens);
+            })
     }
 
-    else if(req.body.dateOfBirth) {
-        Citizen.find({dateOfBirth: req.body.dateOfBirth})
-        .populate("village")
-        .populate("city")
-        .populate("district")
-        .populate("ward")
-        .exec((err, citizens) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.status(200).send(citizens);
-        })
+    else if (req.body.dateOfBirth) {
+        Citizen.find({ dateOfBirth: req.body.dateOfBirth })
+            .populate("village")
+            .populate("city")
+            .populate("district")
+            .populate("ward")
+            .exec((err, citizens) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.status(200).send(citizens);
+            })
     }
 
-    else if(req.body.gender) {
-        Citizen.find({gender: req.body.gender})
-        .populate("village")
-        .populate("city")
-        .populate("district")
-        .populate("ward")
-        .exec((err, citizens) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.status(200).send(citizens);
-        })
+    else if (req.body.gender) {
+        Citizen.find({ gender: req.body.gender })
+            .populate("village")
+            .populate("city")
+            .populate("district")
+            .populate("ward")
+            .exec((err, citizens) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.status(200).send(citizens);
+            })
     }
 }
 
@@ -842,32 +813,32 @@ exports.searchAddress = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    if(req.body.villageName && req.body.wardName && req.body.districtName ) {
+                    if (req.body.villageName && req.body.wardName && req.body.districtName) {
                         citizens.forEach(citizen => {
-                            if(citizen.village.villageName == req.body.villageName
+                            if (citizen.village.villageName == req.body.villageName
                                 && citizen.ward.wardName == req.body.wardName
                                 && citizen.district.districtName == req.body.districtName) {
                                 list.push(citizen)
                             }
                         });
                     }
-                    else if(req.body.wardName && req.body.districtName) {
+                    else if (req.body.wardName && req.body.districtName) {
                         citizens.forEach(citizen => {
-                            if(citizen.ward.wardName == req.body.wardName
+                            if (citizen.ward.wardName == req.body.wardName
                                 && citizen.district.districtName == req.body.districtName) {
                                 list.push(citizen)
                             }
                         });
                     }
-                    else if(req.body.districtName) {
+                    else if (req.body.districtName) {
                         citizens.forEach(citizen => {
-                            if(citizen.district.districtName == req.body.districtName) {
+                            if (citizen.district.districtName == req.body.districtName) {
                                 list.push(citizen)
                             }
                         });
                     }
                     res.status(200).send(list);
-                   
+
                 })
         }
 
@@ -885,17 +856,17 @@ exports.searchAddress = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    if(req.body.villageName && req.body.wardName) {
+                    if (req.body.villageName && req.body.wardName) {
                         citizens.forEach(citizen => {
-                            if(citizen.village.villageName == req.body.villageName
+                            if (citizen.village.villageName == req.body.villageName
                                 && citizen.ward.wardName == req.body.wardName) {
                                 list.push(citizen)
                             }
                         });
                     }
-                    else if(req.body.wardName) {
+                    else if (req.body.wardName) {
                         citizens.forEach(citizen => {
-                            if(citizen.ward.wardName == req.body.wardName) {
+                            if (citizen.ward.wardName == req.body.wardName) {
                                 list.push(citizen)
                             }
                         });
@@ -917,9 +888,9 @@ exports.searchAddress = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    if(req.body.villageName) {
+                    if (req.body.villageName) {
                         citizens.forEach(citizen => {
-                            if(citizen.village.villageName == req.body.villageName) {
+                            if (citizen.village.villageName == req.body.villageName) {
                                 list.push(citizen)
                             }
                         });
@@ -942,9 +913,9 @@ exports.searchAddress = (req, res) => {
                         return;
                     }
 
-                    if(req.body.villageName && req.body.wardName && req.body.districtName && req.body.cityName) {
+                    if (req.body.villageName && req.body.wardName && req.body.districtName && req.body.cityName) {
                         citizens.forEach(citizen => {
-                            if(citizen.village.villageName == req.body.villageName
+                            if (citizen.village.villageName == req.body.villageName
                                 && citizen.ward.wardName == req.body.wardName
                                 && citizen.district.districtName == req.body.districtName
                                 && citizen.city.cityName == req.body.cityName) {
@@ -952,26 +923,26 @@ exports.searchAddress = (req, res) => {
                             }
                         });
                     }
-                    else if(req.body.wardName && req.body.districtName && req.body.cityName) {
+                    else if (req.body.wardName && req.body.districtName && req.body.cityName) {
                         citizens.forEach(citizen => {
-                            if(citizen.ward.wardName == req.body.wardName
+                            if (citizen.ward.wardName == req.body.wardName
                                 && citizen.district.districtName == req.body.districtName
                                 && citizen.city.cityName == req.body.cityName) {
                                 list.push(citizen)
                             }
                         });
                     }
-                    else if(req.body.districtName && req.body.cityName) {
+                    else if (req.body.districtName && req.body.cityName) {
                         citizens.forEach(citizen => {
-                            if(citizen.district.districtName == req.body.districtName
-                                &&  citizen.city.cityName == req.body.cityName) {
+                            if (citizen.district.districtName == req.body.districtName
+                                && citizen.city.cityName == req.body.cityName) {
                                 list.push(citizen)
                             }
                         });
                     }
-                    else if(req.body.cityName) {
+                    else if (req.body.cityName) {
                         citizens.forEach(citizen => {
-                            if(citizen.city.cityName == req.body.cityName) {
+                            if (citizen.city.cityName == req.body.cityName) {
                                 list.push(citizen)
                             }
                         });
@@ -981,8 +952,596 @@ exports.searchAddress = (req, res) => {
         }
 
     })
-    
+
 }
+
+exports.searchStatisticalCitizens = (req, res) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        //check city account
+        re1 = "^[0-9]{2}$"
+        regex1 = new RegExp(re1, "g")
+
+        //check district account
+        re2 = "^[0-9]{4}$"
+        regex2 = new RegExp(re2, "g")
+
+        //check ward account
+        re3 = "^[0-9]{6}$"
+        regex3 = new RegExp(re3, "g")
+
+        //get citizens of city.
+        if (user.username.match(regex1)) {
+            Citizen.find({ city: user.city })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    if (req.body.villageName && req.body.wardName && req.body.districtName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.village.villageName == req.body.villageName
+                                && citizen.ward.wardName == req.body.wardName
+                                && citizen.district.districtName == req.body.districtName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    else if (req.body.wardName && req.body.districtName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.ward.wardName == req.body.wardName
+                                && citizen.district.districtName == req.body.districtName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    else if (req.body.districtName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.district.districtName == req.body.districtName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    //res.status(200).send(list);
+
+                    const age = caculateOld2(list)
+                    const male = countGender(list, "Nữ")
+                    const female = countGender(list, "Nam")
+                    res.status(200).send(
+                        {
+                            "0-10": age.sum1,
+                            "11-20": age.sum2,
+                            "21-30": age.sum3,
+                            "31-40": age.sum4,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
+                            "71-80": age.sum8,
+                            "81-90": age.sum9,
+                            "91-100": age.sum10,
+                            ">100": age.sum11,
+                            male: male,
+                            female: female
+                        }
+                    )
+
+                })
+        }
+
+
+        //get citizens of district
+        else if (user.username.match(regex2)) {
+            Citizen.find({ district: user.district })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    if (req.body.villageName && req.body.wardName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.village.villageName == req.body.villageName
+                                && citizen.ward.wardName == req.body.wardName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    else if (req.body.wardName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.ward.wardName == req.body.wardName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    //res.status(200).send(list);
+                    const age = caculateOld2(list)
+                    const male = countGender(list, "Nữ")
+                    const female = countGender(list, "Nam")
+                    res.status(200).send(
+                        {
+                            "0-10": age.sum1,
+                            "11-20": age.sum2,
+                            "21-30": age.sum3,
+                            "31-40": age.sum4,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
+                            "71-80": age.sum8,
+                            "81-90": age.sum9,
+                            "91-100": age.sum10,
+                            ">100": age.sum11,
+                            male: male,
+                            female: female
+                        }
+                    )
+                })
+        }
+
+        //get citizens of ward
+        else if (user.username.match(regex3)) {
+            Citizen.find({ ward: user.ward })
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    if (req.body.villageName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.village.villageName == req.body.villageName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    //res.status(200).send(list);
+                    const age = caculateOld2(list)
+                    const male = countGender(list, "Nữ")
+                    const female = countGender(list, "Nam")
+                    res.status(200).send(
+                        {
+                            "0-10": age.sum1,
+                            "11-20": age.sum2,
+                            "21-30": age.sum3,
+                            "31-40": age.sum4,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
+                            "71-80": age.sum8,
+                            "81-90": age.sum9,
+                            "91-100": age.sum10,
+                            ">100": age.sum11,
+                            male: male,
+                            female: female
+                        }
+                    )
+                })
+        }
+
+        //get all citizens
+        else {
+            Citizen.find()
+                .populate("city", "cityName cityID")
+                .populate("district", "districtName districtID")
+                .populate("ward", "wardName wardID")
+                .populate("village", "villageName villageID")
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    if (req.body.villageName && req.body.wardName && req.body.districtName && req.body.cityName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.village.villageName == req.body.villageName
+                                && citizen.ward.wardName == req.body.wardName
+                                && citizen.district.districtName == req.body.districtName
+                                && citizen.city.cityName == req.body.cityName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    else if (req.body.wardName && req.body.districtName && req.body.cityName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.ward.wardName == req.body.wardName
+                                && citizen.district.districtName == req.body.districtName
+                                && citizen.city.cityName == req.body.cityName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    else if (req.body.districtName && req.body.cityName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.district.districtName == req.body.districtName
+                                && citizen.city.cityName == req.body.cityName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    else if (req.body.cityName) {
+                        citizens.forEach(citizen => {
+                            if (citizen.city.cityName == req.body.cityName) {
+                                list.push(citizen)
+                            }
+                        });
+                    }
+                    const age = caculateOld2(list)
+                    const male = countGender(list, "Nữ")
+                    const female = countGender(list, "Nam")
+                    res.status(200).send(
+                        {
+                            "0-10": age.sum1,
+                            "11-20": age.sum2,
+                            "21-30": age.sum3,
+                            "31-40": age.sum4,
+                            "41-50": age.sum5,
+                            "51-60": age.sum6,
+                            "61-70": age.sum7,
+                            "71-80": age.sum8,
+                            "81-90": age.sum9,
+                            "91-100": age.sum10,
+                            ">100": age.sum11,
+                            male: male,
+                            female: female
+                        }
+                    )
+                })
+        }
+
+    })
+
+}
+exports.statisticalCitizenByAddress = (req, res) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        //check city account
+        re1 = "^[0-9]{2}$"
+        regex1 = new RegExp(re1, "g")
+
+        //check district account
+        re2 = "^[0-9]{4}$"
+        regex2 = new RegExp(re2, "g")
+
+        //check ward account
+        re3 = "^[0-9]{6}$"
+        regex3 = new RegExp(re3, "g")
+
+        Citizen.find().exec((err, citizens) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+            if (user.username.match(regex1)) {
+                var list = []
+                District.find({ city: user.city }).exec((err, districts) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    districts.forEach(district => {
+                        var sum = 0
+                        citizens.forEach(citizen => {
+                            if (citizen.district.equals(district._id)) {
+                                sum += 1;
+                            }
+                        });
+                        list.push({
+                            name: district.districtName,
+                            population: sum
+                        })
+                    });
+
+                    res.send(list)
+                })
+
+            }
+            else if (user.username.match(regex2)) {
+                var list = []
+                Ward.find({ district: user.district }).exec((err, wards) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    wards.forEach(ward => {
+                        var sum = 0
+                        citizens.forEach(citizen => {
+                            if (citizen.ward.equals(ward._id)) {
+                                sum += 1;
+                            }
+                        });
+                        list.push({
+                            name: ward.wardName,
+                            population: sum
+                        })
+                    });
+
+                    res.send(list)
+                })
+
+            }
+            else if (user.username.match(regex3)) {
+                var list = []
+                Village.find({ ward: user.ward }).exec((err, villages) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    villages.forEach(village => {
+                        var sum = 0
+                        citizens.forEach(citizen => {
+                            if (citizen.village.equals(village._id)) {
+                                sum += 1;
+                            }
+                        });
+                        list.push({
+                            name: village.villageName,
+                            population: sum
+                        })
+                    });
+
+                    res.send(list)
+                })
+
+            }
+            else {
+                var list = []
+                City.find().exec((err, citis) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    citis.forEach(city => {
+                        var sum = 0
+                        citizens.forEach(citizen => {
+                            if (citizen.city.equals(city._id)) {
+                                sum += 1;
+                            }
+                        });
+                        list.push({
+                            name: city.cityName,
+                            population: sum
+                        })
+                    });
+
+                    res.send(list)
+                })
+
+            }
+
+        })
+
+    })
+}
+
+
+exports.searchStatisticalAddress = (req, res) => {
+    User.findById(req.userId).exec((err, user) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+        //check city account
+        re1 = "^[0-9]{2}$"
+        regex1 = new RegExp(re1, "g")
+
+        //check district account
+        re2 = "^[0-9]{4}$"
+        regex2 = new RegExp(re2, "g")
+
+        //check ward account
+        re3 = "^[0-9]{6}$"
+        regex3 = new RegExp(re3, "g")
+
+        //get citizens of city.
+        if (user.username.match(regex1)) {
+            Citizen.find({ city: user.city })
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    if (req.body.districtName && req.body.wardName) {
+                       Ward.findOne({ wardName: req.body.wardName }).exec((err, ward) => {
+                            Village.find({ ward: ward._id }).exec((err, villages) => {
+                                if (err) {
+                                    return;
+                                }
+                                villages.forEach(village => {
+                                    var sum = 0
+                                    citizens.forEach(citizen => {
+                                        if (citizen.village.equals(village._id)) {
+                                            sum += 1;
+                                        }
+                                    });
+                                    list.push({
+                                        name: village.villageName,
+                                        population: sum
+                                    })
+                                });
+                                console.log(list);
+
+                                res.send(list)
+                            })
+                        })
+                       
+                    }
+                    else if (req.body.districtName) {
+                        District.findOne({ districtName: req.body.districtName }).exec((err, district) => {
+                            Ward.find({ district: district._id }).exec((err, wards) => {
+                                if (err) {
+                                    return;
+                                }
+                                wards.forEach(ward => {
+                                    var sum = 0
+                                    citizens.forEach(citizen => {
+                                        if (citizen.ward.equals(ward._id)) {
+                                            sum += 1;
+                                        }
+                                    });
+                                    list.push({
+                                        name: ward.wardName,
+                                        population: sum
+                                    })
+                                });
+                                console.log(list);
+                                res.send(list)
+                            })
+                        })
+
+                    }
+                })
+        }
+
+
+        //get citizens of district
+        else if (user.username.match(regex2)) {
+            Citizen.find({ district: user.district })
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    if (req.body.wardName) {
+                        Ward.findOne({ wardName: req.body.wardName }).exec((err, ward) => {
+                            Village.find({ ward: ward._id }).exec((err, villages) => {
+                                if (err) {
+                                    return;
+                                }
+                                villages.forEach(village => {
+                                    var sum = 0
+                                    citizens.forEach(citizen => {
+                                        if (citizen.village.equals(village._id)) {
+                                            sum += 1;
+                                        }
+                                    });
+                                    list.push({
+                                        name: village.villageName,
+                                        population: sum
+                                    })
+                                });
+                                console.log(list);
+
+                                res.send(list)
+                            })
+                        })
+                    }
+                })
+        }
+
+        //get all citizens
+        else {
+            Citizen.find()
+                .exec((err, citizens) => {
+                    var list = []
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+
+                    if (req.body.wardName && req.body.districtName && req.body.cityName) {
+                        Ward.findOne({ wardName: req.body.wardName }).exec((err, ward) => {
+                            Village.find({ ward: ward._id }).exec((err, villages) => {
+                                if (err) {
+                                    return;
+                                }
+                                villages.forEach(village => {
+                                    var sum = 0
+                                    citizens.forEach(citizen => {
+                                        if (citizen.village.equals(village._id)) {
+                                            sum += 1;
+                                        }
+                                    });
+                                    list.push({
+                                        name: village.villageName,
+                                        population: sum
+                                    })
+                                });
+                                console.log(list);
+
+                                res.send(list)
+                            })
+                        })
+                    }
+                    else if (req.body.districtName && req.body.cityName) {
+                        District.findOne({ districtName: req.body.districtName }).exec((err, district) => {
+                            Ward.find({ district: district._id }).exec((err, wards) => {
+                                if (err) {
+                                    return;
+                                }
+                                wards.forEach(ward => {
+                                    var sum = 0
+                                    citizens.forEach(citizen => {
+                                        if (citizen.ward.equals(ward._id)) {
+                                            sum += 1;
+                                        }
+                                    });
+                                    list.push({
+                                        name: ward.wardName,
+                                        population: sum
+                                    })
+                                });
+                                console.log(list);
+                                res.send(list)
+                            })
+                        })
+                    }
+                    else if (req.body.cityName) {
+                        City.findOne({cityName: req.body.cityName }).exec((err, city) => {
+                            District.find({ city: city._id }).exec((err, districts) => {
+                                if (err) {
+                                    return;
+                                }
+                                districts.forEach(district => {
+                                    var sum = 0
+                                    citizens.forEach(citizen => {
+                                        if (citizen.district.equals(district._id)) {
+                                            sum += 1;
+                                        }
+                                    });
+                                    list.push({
+                                        name: district.districtName,
+                                        population: sum
+                                    })
+                                });
+                                console.log(list);
+                                res.send(list)
+                            })
+                        })
+                    }
+                    
+                })
+        }
+
+    })
+
+}
+
 
 
 
