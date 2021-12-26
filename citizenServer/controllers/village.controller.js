@@ -40,7 +40,7 @@ exports.postVillage = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    res.send({ message: "village was created successfully!" });
+                    res.send(village);
                 });
             })
         });
@@ -98,7 +98,7 @@ exports.putVillage = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                res.send({ message: "Chỉnh sửa thành công" });
+                res.send({message: "Chỉnh sửa thành công"});
             })
 
         })

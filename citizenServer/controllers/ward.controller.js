@@ -39,7 +39,7 @@ exports.postWard = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    res.send({ message: "ward was created successfully!" });
+                    res.send(ward);
                 });
             })
         });
@@ -100,7 +100,7 @@ exports.putWard = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                res.send({ message: "Chỉnh sửa thành công" });
+                res.send({message: "Chỉnh sửa thành công"});
             })
 
         })
