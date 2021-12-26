@@ -500,11 +500,7 @@ function caculateOld2(citizens) {
 
 
     })
-    //Hiện số dân đã nhập trên tỉnh/huyện/xã/ làng đó
-    console.log(sum1);
-    console.log(sum2);
-    console.log(sum3);
-
+    
     return {
         sum1: sum1,
         sum2: sum2,
@@ -1392,7 +1388,8 @@ exports.searchStatisticalAddress = (req, res) => {
                     }
                     else if (req.body.districtName) {
                         District.findOne({ districtName: req.body.districtName }).exec((err, district) => {
-                            Ward.find({ district: district._id }).exec((err, wards) => {
+                            if(district){
+                                 Ward.find({ district: district._id }).exec((err, wards) => {
                                 if (err) {
                                     return;
                                 }
@@ -1411,6 +1408,9 @@ exports.searchStatisticalAddress = (req, res) => {
                                 console.log(list);
                                 res.send(list)
                             })
+                            }
+                            
+                           
                         })
 
                     }
@@ -1429,26 +1429,31 @@ exports.searchStatisticalAddress = (req, res) => {
                     }
                     if (req.body.wardName) {
                         Ward.findOne({ wardName: req.body.wardName }).exec((err, ward) => {
-                            Village.find({ ward: ward._id }).exec((err, villages) => {
-                                if (err) {
-                                    return;
-                                }
-                                villages.forEach(village => {
-                                    var sum = 0
-                                    citizens.forEach(citizen => {
-                                        if (citizen.village.equals(village._id)) {
-                                            sum += 1;
-                                        }
+                            if(ward){
+                                Village.find({ ward: ward._id }).exec((err, villages) => {
+                                    if (err) {
+                                        return;
+                                    }
+                                    villages.forEach(village => {
+                                        var sum = 0
+                                        citizens.forEach(citizen => {
+                                            if (citizen.village.equals(village._id)) {
+                                                sum += 1;
+                                            }
+                                        });
+                                        list.push({
+                                            name: village.villageName,
+                                            population: sum
+                                        })
                                     });
-                                    list.push({
-                                        name: village.villageName,
-                                        population: sum
-                                    })
-                                });
-                                console.log(list);
-
-                                res.send(list)
-                            })
+                                    console.log(list);
+    
+                                    res.send(list)
+                                })
+                            
+                            }
+                            
+                           
                         })
                     }
                 })

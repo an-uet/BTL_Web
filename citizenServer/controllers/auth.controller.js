@@ -13,43 +13,9 @@ const { village } = require("../models");
 
 
 
-//signup A1
-exports.signupA1 = (req, res) => {
-    const user = new User({
-      username: req.body.username,
-      password: bcrypt.hashSync(req.body.password, 8),
-      active: 1,
-
-    });
-
-    user.save((err, user) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-
-      Role.findOne({ name: "A1" }, (err, role) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
-        }
-
-        user.roles = [role._id];
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-
-          res.send({ message: "User was registered successfully!" });
-        });
-      });
-
-    });
-};
 
 
-//signup user: A2
+// tạo tài khoản A2
 exports.signupA2 = (req, res) => {
 
     const user = new User({
@@ -114,7 +80,7 @@ exports.signupA2 = (req, res) => {
 
 };
 
-//signup user: A3
+// tạo tài khoản A3
 exports.signupA3 = (req, res) => {
  
     const user = new User({
@@ -180,11 +146,10 @@ exports.signupA3 = (req, res) => {
       });
     });
   
-
 };
 
 
-//signup user: B1
+//tạo tài khoản cho B1
 exports.signupB1 = (req, res) => {
     const user = new User({
       username: req.body.username,
@@ -249,7 +214,7 @@ exports.signupB1 = (req, res) => {
     });
 };
 
-//signup user: B2
+//tạo tài khoản cho B2
 exports.signupB2 = (req, res) => {
     const user = new User({
       username: req.body.username,
@@ -317,9 +282,11 @@ exports.signupB2 = (req, res) => {
 
 
 
-//cap nhat database truong active.
+// cập nhập thời hian hoạt động của các tài khoản.
 function updateActiveField() {
   var currentTime = new Date();
+
+  //kiểm tra và cập nhập thời gian hoạt động của từng tài khoản.
   User.find({}).exec((err, users) => {
     if (err) {
       console.log("loi");
@@ -343,13 +310,14 @@ function updateActiveField() {
             res.status(500).send({ message: err });
             return;
           }
-          //console.log("cap nhat thoi gian hoat dong thanh cong")
+         
         });
       }
     });
   });
 
 
+  //kiểm tra và cập nhập thời gian hoạt động của những tài khoản cấp dưới khi tài khoản cấp trên đã hết thời gian hoạt động.
   User.find({}).exec((err, users) => {
     if (err) {
       console.log("loi");
@@ -370,7 +338,7 @@ function updateActiveField() {
                 res.status(500).send({ message: err });
                 return;
               }
-              // console.log("thanh cong")
+           
             });
           })
         })

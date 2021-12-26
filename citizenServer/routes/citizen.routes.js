@@ -78,14 +78,21 @@ module.exports = function (app) {
     //tìm kiếm biểu đồ thống kê
     app.post("/statistical",
         [
-            authJwt.verifyToken
+            authJwt.verifyToken,
+            checkVillage.checkVillageNameExisted,
+            checkWard.checkWardNameExisted, 
+            checkDistrict.checkDistrictNameExisted, 
+            checkCity.checkCityNameExisted
         ],
         citizenController.searchStatisticalCitizens
     )
 
     app.post("/population",
         [
-            authJwt.verifyToken
+            authJwt.verifyToken,
+            checkWard.checkWardNameExisted, 
+            checkDistrict.checkDistrictNameExisted, 
+            checkCity.checkCityNameExisted
         ],
         citizenController.searchStatisticalAddress
     )

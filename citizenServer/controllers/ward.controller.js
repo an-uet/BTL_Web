@@ -75,7 +75,7 @@ exports.putWard = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-            if (req.body.password) {
+            if (req.body.password && req.body.password_confirm) {
                 userController.editUser_password(ward.wardID, req.body.password)
             }
 
@@ -100,7 +100,7 @@ exports.putWard = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                res.send({ message: "ward was edited" });
+                res.send({ message: "Chỉnh sửa thành công" });
             })
 
         })

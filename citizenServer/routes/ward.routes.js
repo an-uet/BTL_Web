@@ -31,10 +31,11 @@ module.exports = function (app) {
         [
             authJwt.verifyToken, authJwt.isA3,
             authJwt.checkTime2Work,
+            checkWard.checkValidWardID,
             checkWard.checkWardExisted,
             checkWard.checkDuplicateWardID,
-            checkWard.checkValidWardID,
-            verifySignUp.checkValidpassword
+            verifySignUp.checkValidpassword,
+            checkWard.checkPasswordConfirmWard
 
         ],
         wardController.putWard

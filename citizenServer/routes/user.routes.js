@@ -95,16 +95,27 @@ module.exports = function (app) {
     ],
     userController.getAccount2);
 
-    
-app.post("/completeTheWork",
-[
-  authJwt.verifyToken,
-  authJwt.isB1
-],
-userController.completeTheWork)
+
+  app.put("/account", [
+    authJwt.verifyToken,
+    verifySignUp.checkPasswordConfirm,
+    verifySignUp.checkValidpassword
+  ],
+    userController.changePassword
+
+  )
+
+  app.post("/completeTheWork",
+    [
+      authJwt.verifyToken,
+      authJwt.isB1
+    ],
+    userController.completeTheWork)
 
 
-app.get("/acc", [authJwt.verifyToken], userController.getAccount)
+
+
+ 
 };
 
 

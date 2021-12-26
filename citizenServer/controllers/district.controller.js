@@ -69,7 +69,7 @@ exports.putDistrict = (req, res) => {
                 return;
             }
             if (district) {
-                if (req.body.password.match(regex)) {
+                if (req.body.password && req.body.password_confirm) {
                     userController.editUser_password(district.districtID, req.body.password)
                 }
                 if (req.body.timeStart && req.body.timeFinish) {
@@ -92,7 +92,7 @@ exports.putDistrict = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    res.send({ message: "district was edited" });
+                    res.send({message: "Chỉnh sửa thành công"});
                 })
             }
         })

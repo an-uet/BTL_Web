@@ -34,7 +34,8 @@ module.exports = function (app) {
         checkDistrict.checkDistrictExisted,
         checkDistrict.checkValidDistrictID,
         checkDistrict.checkDuplicateDistrictID,
-        verifySignUp.checkValidpassword
+        verifySignUp.checkValidpassword,
+        checkDistrict.checkPasswordConfirmDistrict
     ],
     districtController.putDistrict
     )

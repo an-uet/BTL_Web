@@ -1,4 +1,5 @@
 const db = require("../models");
+var bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 const District = db.district;
 
@@ -6,40 +7,52 @@ const District = db.district;
 //kiểm tra trùng lặp thành phố
 checkDuplicateDistrict = (req, res, next) => {
     // districtname
-    District.findOne({
-        districtName: req.body.districtName,
-        districtID: req.body.districtID
-    }).exec((err, district) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-
-        if (district) {
-            res.status(400).send({ message: "Failed! district is already exited!" });
-            return;
-        }
-        next();
-    });
+    if(req.body.districtName && req.body.districtID){
+        District.findOne({
+            districtName: req.body.districtName,
+            districtID: req.body.districtID
+        }).exec((err, district) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+    
+            if (district) {
+                res.status(400).send({ message: "Failed! district is already exited!" });
+                return;
+            }
+            next();
+        });
+    }
+    else {
+next()
+    }
+    
 };
 
 //kiểm tra trùng lặp mã
 checkDuplicateDistrictID = (req, res, next) => {
     // districtID
-    District.findOne({
-        districtID: req.body.districtID,
-    }).exec((err, district) => {
-        if (err) {
-            res.status(500).send({ message: err });
-            return;
-        }
-
-        if (district) {
-            res.status(400).send({ message: "Failed! districtID is already exited!" });
-            return;
-        }
-        next();
-    });
+    if(req.body.districtID){
+        District.findOne({
+            districtID: req.body.districtID,
+        }).exec((err, district) => {
+            if (err) {
+                res.status(500).send({ message: err });
+                return;
+            }
+    
+            if (district) {
+                res.status(400).send({ message: "Failed! districtID is already exited!" });
+                return;
+            }
+            next();
+        });
+    }
+    else {
+        next()
+    }
+    
 };
 
 //kiểm tra tồn tại thành phố/ tỉnh hay không:
@@ -124,13 +137,44 @@ checkDistrictNameExisted = (req, res, next) => {
 
 }
 
+
+checkPasswordConfirmDistrict = (req,res, next)=> {
+    if(req.body.password_confirm && req.body.password) {
+      District.findById(req.body._id).exec((err, district) => {
+        User.findOne({username: district.districtID}).exec((err, user) => {
+          if(user){
+            var passwordIsValid = bcrypt.compareSync(
+              req.body.password_confirm,
+              user.password
+            );
+      
+            if (!passwordIsValid) {
+              return res.status(401).send({
+                message: "Mật khẩu cũ không chính xác. Vui lòng kiểm tra lại!"
+              });
+            }
+            else {
+              next();
+            }
+          }
+        })
+      })
+    }   
+    else {
+      next()
+    }
+    
+  }
+
+
 const checkDistrict = {
     checkDuplicateDistrict,
     checkDuplicateDistrictID,
     checkDistrictExisted,
     checkDistrictExistedByDistrictID,
     checkValidDistrictID,
-    checkDistrictNameExisted
+    checkDistrictNameExisted,
+    checkPasswordConfirmDistrict
 
 };
 

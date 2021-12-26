@@ -74,7 +74,7 @@ exports.putVillage = (req, res) => {
                 return;
             }
             
-            if (req.body.password) {
+            if (req.body.password && req.body.password_confirm) {
                 userController.editUser_password(village.villageID, req.body.password)
             }
 
@@ -98,7 +98,7 @@ exports.putVillage = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                res.send({ message: "village was edited" });
+                res.send({ message: "Chỉnh sửa thành công" });
             })
 
         })

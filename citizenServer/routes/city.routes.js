@@ -39,11 +39,13 @@ module.exports = function (app) {
         [
             authJwt.verifyToken, 
             authJwt.isA1, 
+            checkCity.checkValidCityID,
             checkCity.checkDuplicateCityID,
             checkCity.checkDuplicateCity,
             checkCity.checkCityExisted,
+            checkCity.checkPasswordConfirmCity,
             verifySignUp.checkValidpassword,
-            checkCity.checkValidCityID
+            
 
            
         ],

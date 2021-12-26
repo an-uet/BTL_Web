@@ -1,4 +1,8 @@
 const db = require("../models");
+const Citizen = require("../models/citizen.model");
+var bcrypt = require("bcryptjs");
+const District = require("../models/district.model");
+const { checkPasswordConfirmCity } = require("./checkCity");
 const ROLES = db.ROLES;
 const User = db.user;
 const City = db.city;
@@ -50,20 +54,43 @@ checkValidpassword = (req, res, next) => {
   }
 }
 
-titleCase = function titleCase(str){
-   var splitStr = str.toLowerCase().split(' ');
-   for (var i = 0; i < splitStr.length; i++) {
-       splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
-   }
-   return splitStr.join(' '); 
+checkPasswordConfirm = (req,res,next) => {
+  if(req.body.password_confirm && req.body.password)
+  {
+    User.findById(req.userId)
+    .exec((err, user) => {
+      if (err) {
+        console.log(err)
+        return;
+      }
+      if(user)
+      {
+        var passwordIsValid = bcrypt.compareSync(
+          req.body.password_confirm,
+          user.password
+        );
+        if(!passwordIsValid){
+         return res.status(400).send({message: "Mật khẩu cũ không chính xác. Vui lòng kiểm tra lại!"})
+        }
+        else {
+          next()
+        }
+      }
+
+    })
+  }
+  else {
+    next()
+  }
 }
+
 
 const verifySignUp = {
   checkDuplicateUsername,
   checkRolesExisted,
   checkValidpassword,
-  titleCase
- 
+  checkPasswordConfirm
+  
 };
 
 module.exports = verifySignUp;

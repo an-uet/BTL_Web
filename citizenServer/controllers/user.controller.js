@@ -68,104 +68,131 @@ exports.getAccount2 = (req, res) => {
 
     
       if (user.username.match(regex1)) {
-        District.find()
+        District.find({city: user.city})
         .exec((err, districts) => {
           var account = [];
           var location = [];
           var sum = 0
-          
-          districts.forEach(district => {
+       
+          if(districts[0]){
+            districts.forEach(district => {
 
-            User.findOne({ username: district.districtID })
-              .populate("roles")
-              .populate("city")
-              .populate("district")
-              .exec((err, user) => {
-                
-                sum += 1;
-                if (user) {
-                  account.push(user)
-                }
-                else {
-                 location.push(district)
-                }
-                //list.push(element);
-                //console.log(sum + "   " + districts.length)
-                if (districts.length == sum) {
-                  res.status(200).send({
-                    location:location, 
-                    account: account
-                  })
-                }
-              })
-          });
+              User.findOne({  username: district.districtID })
+                .populate("roles")
+                .populate("city")
+                .populate("district")
+                .exec((err, user) => {
+                  
+                  sum += 1;
+                  if (user) {
+                    account.push(user)
+                  }
+                  else {
+                   location.push(district)
+                  }
+                  //list.push(element);
+                  //console.log(sum + "   " + districts.length)
+                  if (districts.length == sum) {
+                    res.status(200).send({
+                      location:location, 
+                      account: account
+                    })
+                  }
+                })
+            });
+          }
+          else {
+            res.status(400).send({
+              location:location, 
+              account: account
+            })
+          }
+          
         })
       }
 
       else if (user.username.match(regex2)) {
-        Ward.find()
+        Ward.find({district: user.district})
         .exec((err, wards) => {
           var account = [];
           var location = [];
           var sum = 0
-          wards.forEach(ward => {
-            User.findOne({ username: ward.wardID })
-            .populate("roles")
-            .populate("city")
-            .populate("district")
-            .populate("ward")
-       
-              .exec((err, user) => {
-                sum += 1;
-                if (user) {
-                  account.push(user)
-                }
-                else {
-                  
-                 location.push(ward)
-                }
-                //console.log(sum + "   " + districts.length)
-                if (wards.length == sum) {
-                  res.status(200).send({
-                    location:location, 
-                    account: account
-                  })
-                }
-              })
-          });
+          if(wards[0]){
+            wards.forEach(ward => {
+              User.findOne({ username: ward.wardID })
+              .populate("roles")
+              .populate("city")
+              .populate("district")
+              .populate("ward")
+         
+                .exec((err, user) => {
+                  sum += 1;
+                  if (user) {
+                    account.push(user)
+                  }
+                  else {
+                    
+                   location.push(ward)
+                  }
+                  //console.log(sum + "   " + districts.length)
+                  if (wards.length == sum) {
+                    res.status(200).send({
+                      location:location, 
+                      account: account
+                    })
+                  }
+                })
+            });
+
+          }
+          else{
+            res.send({location:location, 
+              account: account})
+          }
+          
         })
       }
       else if (user.username.match(regex3)) {
-        Village.find()
+        Village.find({ward: user.ward})
         .exec((err, villages) => {
           var account = [];
           var location = [];
           var sum = 0
-          villages.forEach(village => {
-            User.findOne({ username: village.villageID })
-            .populate("roles")
-            .populate("city")
-            .populate("district")
-            .populate("ward")
-            .populate("village")
-              .exec((err, user) => {
-                sum += 1;
-                if (user) {
-                  account.push(user)
-                }
-                else {
-                 location.push(village)
-                }
-                
-                //console.log(sum + "   " + districts.length)
-                if (villages.length == sum) {
-                  res.status(200).send({
-                    location:location, 
-                    account: account
-                  })
-                }
-              })
-          });
+          if(villages[0]){
+
+            villages.forEach(village => {
+              User.findOne({ username: village.villageID })
+              .populate("roles")
+              .populate("city")
+              .populate("district")
+              .populate("ward")
+              .populate("village")
+                .exec((err, user) => {
+                  sum += 1;
+                  if (user) {
+                    account.push(user)
+                  }
+                  else {
+                   location.push(village)
+                  }
+                  
+                  //console.log(sum + "   " + districts.length)
+                  if (villages.length == sum) {
+                    res.status(200).send({
+                      location:location, 
+                      account: account
+                    })
+                  }
+                })
+            });
+          }
+          else {
+            res.status(400).send({
+              location:location, 
+              account: account
+            })
+          }
+         
         })
       }
 
@@ -269,6 +296,8 @@ exports.editUser_password = (ID, newPassword) => {
           }
           console.log("cap nhat pass thanh cong")
         });
+        
+        
       }
 
     })
@@ -331,11 +360,17 @@ exports.completeTheWork = (req, res) => {
             if (user.roles[0].name == "A3") {
               User.find({ createBy: user.username }).exec((err, arr) => {
                 ok = true;
-                arr.forEach(element => {
-                  if (element.complete == 0) {
-                    ok = false;
-                  }
-                });
+                if(arr[0]){
+                  arr.forEach(element => {
+                    if (element.complete == 0) {
+                      ok = false;
+                    }
+                  });
+                }
+                else {
+                  ok = false;
+                }
+                
                 if (ok == true) {
                   user.complete = 1;
                 }
@@ -366,11 +401,18 @@ exports.completeTheWork = (req, res) => {
             if (user.roles[0].name == "A2") {
               User.find({ createBy: user.username }).exec((err, arr) => {
                 ok = true;
-                arr.forEach(element => {
-                  if (element.complete == 0) {
-                    ok = false;
-                  }
-                });
+                if(arr[0]){
+                  arr.forEach(element => {
+                    if (element.complete == 0) {
+                      ok = false;
+                    }
+                  });
+
+                }
+                else{
+                  ok = false;
+                }
+               
                 if (ok == true) {
                   user.complete = 1;
                 }
@@ -393,6 +435,26 @@ exports.completeTheWork = (req, res) => {
   }
 }
 
+
+exports.changePassword =(req,res) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      console.log(err)
+      return;
+    }
+    if(user){
+      user.password = bcrypt.hashSync(req.body.password, 8)
+      user.save(err => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+      res.status(200).send({message: "Sửa mật khẩu thành công"})
+      });
+    }
+    
+  })
+}
 
 
 

@@ -56,8 +56,8 @@ exports.putCity = (req, res) => {
                 return;
             }
             if (city) {
-                if (req.body.password) {
-                    userController.editUser_password(city.cityID, req.body.password)
+                if (req.body.password && req.body.password_confirm) {
+                    userController.editUser_password(city.cityID, req.body.password, req.body.password_confirm)
                 }
 
                 if (req.body.timeStart && req.body.timeFinish) {
@@ -84,7 +84,7 @@ exports.putCity = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    res.send({ message: "City was edited" });
+                    res.status(200).send({message: "Chỉnh sửa thành công"});
                 })
 
             }

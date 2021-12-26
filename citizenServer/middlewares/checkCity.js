@@ -1,4 +1,5 @@
 const db = require("../models");
+var bcrypt = require("bcryptjs");
 const City = db.city;
 const User = db.user;
 
@@ -126,13 +127,46 @@ checkCityNameExisted = (req,res,next) => {
     
 }
 
+checkPasswordConfirmCity = (req,res, next)=> {
+    if(req.body.password_confirm && req.body.password) {
+      City.findById(req.body._id).exec((err, city) => {
+        User.findOne({username: city.cityID}).exec((err, user) => {
+          if(user){
+            var passwordIsValid = bcrypt.compareSync(
+              req.body.password_confirm,
+              user.password
+            );
+      
+            if (!passwordIsValid) {
+              return res.status(401).send({
+                message: "Mật khẩu cũ không chính xác. Vui lòng kiểm tra lại!"
+              });
+            }
+            else {
+              next();
+            }
+          }
+        })
+      })
+    }
+    
+    else {
+      next()
+    }
+    
+  }
+  
+
+
+
 const checkCity = {
     checkDuplicateCity,
     checkDuplicateCityID,
     checkCityExisted,
     checkCityExistedByCityID,
     checkValidCityID,
-    checkCityNameExisted
+    checkCityNameExisted,
+    checkPasswordConfirmCity
    
   };
   
