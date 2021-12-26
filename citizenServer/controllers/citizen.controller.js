@@ -8,7 +8,7 @@ const City = db.city;
 const Ward = db.ward;
 const District = db.district;
 
-//khai báo cư dân cho B2
+//khai báo cư dân cho B2.
 exports.postCitizenForB2 = (req, res) => {
 
     const citizen = new Citizen({
@@ -36,7 +36,6 @@ exports.postCitizenForB2 = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
-
             citizen.city = village.city;
             citizen.district = village.district;
             citizen.ward = village.ward
@@ -53,7 +52,7 @@ exports.postCitizenForB2 = (req, res) => {
 
 }
 
-//khai báo cư dân B1: lúc nhập thì nhập thêm 1 trường villageName.
+//khai báo cư dân B1: b1 phải khai báo thêm cư dân thuộc làng nào.
 exports.postCitizenForB1 = (req, res) => {
 
     const citizen = new Citizen({
@@ -88,6 +87,8 @@ exports.postCitizenForB1 = (req, res) => {
             citizen.city = ward.city;
             citizen.district = ward.district;
         })
+
+        //kiểm tra làng B1 đã nhập có tồn tại hay không.
         Village.findOne({ villageName: req.body.villageName }).exec((err, village) => {
             if (err) {
                 res.status(500).send({ message: err });
@@ -135,7 +136,7 @@ exports.deleteCitizen = (req, res) => {
         })
 }
 
-//xoa cua dan cua mot tinh
+//xóa cư dân của một tỉnh/thành phố
 exports.deleteCitizensOfCity = (_id) => {
     Citizen.deleteMany({ city: _id })
         .exec((err, citizens) => {
@@ -143,11 +144,11 @@ exports.deleteCitizensOfCity = (_id) => {
                 console.log(err)
                 return;
             }
-            console.log("delete all citizens of this city");
+           // console.log("delete all citizens of this city");
         })
 }
 
-//xoa cua dan cua mot huyen
+//xóa cư dân của một huyện/quận
 exports.deleteCitizensOfDistrict = (_id) => {
     Citizen.deleteMany({ district: _id })
         .exec((err, citizens) => {
@@ -155,11 +156,11 @@ exports.deleteCitizensOfDistrict = (_id) => {
                 console.log(err)
                 return;
             }
-            console.log("delete all citizens of this district");
+           // console.log("delete all citizens of this district");
         })
 }
 
-//xoa cua dan cua mot xa
+//xóa cư dân của một xã/phường/thị trấn
 exports.deleteCitizensOfWard = (_id) => {
     Citizen.deleteMany({ ward: _id })
         .exec((err, citizens) => {
@@ -167,11 +168,11 @@ exports.deleteCitizensOfWard = (_id) => {
                 console.log(err)
                 return;
             }
-            console.log("delete all citizens of this ward");
+           /// console.log("delete all citizens of this ward");
         })
 }
 
-//xoa cua dan cua mot lang
+//xóa cư dân của 1 làng
 exports.deleteCitizensOfVillage = (_id) => {
     Citizen.deleteMany({ village: _id })
         .exec((err, citizens) => {
@@ -179,12 +180,12 @@ exports.deleteCitizensOfVillage = (_id) => {
                 console.log(err)
                 return;
             }
-            console.log("delete all citizens of this village");
+            //console.log("delete all citizens of this village");
         })
 }
 
 
-//lấy danh sách của cu dân tùy thuộc vào tài khoản đăng nhập là gì.
+//lấy danh sách cư dân của một đơn vị hành chính tùy thuộc vào tài khoản đăng nhập là gì.
 exports.getCitizens = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
@@ -307,6 +308,8 @@ exports.putCitizen = (req, res) => {
             }
             if (citizen) {
 
+
+    //sửa thông tin người dân của tài khoản B1, kiểm tra xem làng mới có tồn tại/thuộc quyền khai báo của tài khoản B1 đó không
                 if (req.body.villageName) {
                     User.findById(req.userId).exec((err, user) => {
                         if (err) {
@@ -364,7 +367,6 @@ exports.putCitizen = (req, res) => {
                                         });
                                     }
                                     else {
-                                        console.log("meomeomoe")
                                         res.send({ message: "công dân ở làng này không thuộc quyền khai báo của bạn" });
                                         return;
 
@@ -379,6 +381,8 @@ exports.putCitizen = (req, res) => {
                     })
                 }
 
+
+                //sửa thông tin cư dân của B2
                 else {
                     if (req.body.citizenID) {
                         citizen.citizenID = req.body.citizenID;
@@ -419,33 +423,14 @@ exports.putCitizen = (req, res) => {
                     });
 
                 }
-
-
             }
         })
 }
 
 
-exports.sortName = (req, res) => {
-    Citizen.find().sort({ name: 1 })
-        .populate("village")
-        .populate("city")
-        .populate("district")
-        .populate("ward")
-        .exec((err, citizens) => {
-            if (err) {
-                res.status(500).send({ message: err });
-                return;
-            }
-            res.status(200).send(citizens);
-        })
-}
 
 
-
-//thống kê
-//theo tuổi
-
+//tính tổng số người dân theo từng mốc tuổi.
 
 function caculateOld2(citizens) {
     var sum1 = 0;
@@ -529,7 +514,7 @@ function countGender(citizens, gender) {
 }
 
 
-//trả vể dữ liệu cho từng đối tượng tài khoản khác nhau.
+//trả vể dữ liệu thống kê tuổi + giới tính cho từng đối tượng tài khoản khác nhau.
 exports.statisticalCitizens = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
@@ -552,7 +537,7 @@ exports.statisticalCitizens = (req, res) => {
         re4 = "^[0-9]{8}$"
         regex4 = new RegExp(re4, "g")
 
-        //get citizens of city.
+        //trả về thông tin thống kê tuổi+ giới tính của tỉnh/thành phố
         if (user.username.match(regex1)) {
             Citizen.find({ city: user.city })
                 .exec((err, citizens) => {
@@ -584,7 +569,7 @@ exports.statisticalCitizens = (req, res) => {
         }
 
 
-        //get citizens of district
+        //trả về thông tin thống kê tuổi của quận/huyện
         else if (user.username.match(regex2)) {
             Citizen.find({ district: user.district })
                 .exec((err, citizens) => {
@@ -614,7 +599,7 @@ exports.statisticalCitizens = (req, res) => {
                     )
                 })
         }
-        //get citizens of ward
+        //trả về thông tin thống kê tuổi+giới tính của xã/phường.
         else if (user.username.match(regex3)) {
             Citizen.find({ ward: user.ward })
                 .exec((err, citizens) => {
@@ -710,74 +695,7 @@ exports.statisticalCitizens = (req, res) => {
 }
 
 
-
-//tìm kiếm cư dân theo một trường thông tin bất kì.
-exports.searchCitizens = (req, res) => {
-    if (req.body.citizenID) {
-        Citizen.findOne({ citizenID: req.body.citizenID })
-            .populate("village")
-            .populate("city")
-            .populate("district")
-            .populate("ward")
-            .exec((err, citizen) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-                res.status(200).send(citizen);
-            })
-    }
-
-    else if (req, body.name) {
-        Citizen.find({ name: req.body.name })
-            .populate("village")
-            .populate("city")
-            .populate("district")
-            .populate("ward")
-            .exec((err, citizens) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-                res.status(200).send(citizens);
-            })
-    }
-
-    else if (req.body.dateOfBirth) {
-        Citizen.find({ dateOfBirth: req.body.dateOfBirth })
-            .populate("village")
-            .populate("city")
-            .populate("district")
-            .populate("ward")
-            .exec((err, citizens) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-                res.status(200).send(citizens);
-            })
-    }
-
-    else if (req.body.gender) {
-        Citizen.find({ gender: req.body.gender })
-            .populate("village")
-            .populate("city")
-            .populate("district")
-            .populate("ward")
-            .exec((err, citizens) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-                res.status(200).send(citizens);
-            })
-    }
-}
-
-
-
-//lọc
-
+//lọc cư dân theo tên đơn vị hành chính
 exports.searchAddress = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
@@ -951,6 +869,8 @@ exports.searchAddress = (req, res) => {
 
 }
 
+
+//thống kê cư dân của các đơn vị hành chính theo độ tuổi + giới tính.
 exports.searchStatisticalCitizens = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
@@ -1203,6 +1123,8 @@ exports.searchStatisticalCitizens = (req, res) => {
     })
 
 }
+
+//thống kê cư dân của các đơn vị hành chính trực thuộc
 exports.statisticalCitizenByAddress = (req, res) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
@@ -1226,6 +1148,8 @@ exports.statisticalCitizenByAddress = (req, res) => {
                 res.status(500).send({ message: err });
                 return;
             }
+
+            //thống kê cư dân của các quận/huyện trực thuộc tỉnh/thành phố.
             if (user.username.match(regex1)) {
                 var list = []
                 District.find({ city: user.city }).exec((err, districts) => {
@@ -1251,6 +1175,8 @@ exports.statisticalCitizenByAddress = (req, res) => {
                 })
 
             }
+
+            //thống kê cư dân của các xã/phường trực thuộc quận/huyện
             else if (user.username.match(regex2)) {
                 var list = []
                 Ward.find({ district: user.district }).exec((err, wards) => {

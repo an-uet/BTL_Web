@@ -70,7 +70,7 @@ checkPasswordConfirm = (req,res,next) => {
           user.password
         );
         if(!passwordIsValid){
-         return res.status(400).send({message: "Mật khẩu cũ không chính xác. Vui lòng kiểm tra lại!"})
+         return res.status(400).send({message: "Mật khẩu cũ chưa chính xác"})
         }
         else {
           next()

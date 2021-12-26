@@ -348,9 +348,15 @@ function updateActiveField() {
 }
 
 
-//signin
+//xử lý đăng nhập
 exports.signin = (req, res) => {
+
+
+  //kiểm tra thời gian hoạt động của tài khoản
   updateActiveField();
+
+
+  //tìm kiếm tài khoản trong database
   User.findOne({
     username: req.body.username
   })
@@ -369,6 +375,7 @@ exports.signin = (req, res) => {
         return res.status(404).send({ message: "User Not found." });
       }
 
+    //kiểm tra mật khẩu.
       var passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
@@ -381,6 +388,7 @@ exports.signin = (req, res) => {
         });
       }
 
+      //nếu mật khẩu chính xác --> cấp token
       var token = jwt.sign({ id: user.id }, config.secret, {
         expiresIn: 14400 // 4 hours
       });
@@ -407,6 +415,8 @@ exports.signin = (req, res) => {
       if (user.village) {
         village_name = user.village.villageName
       }
+
+      //trả về thông tin của tài khoản sau khi đăng nhập thành công.
       res.status(200).send({
         id: user._id,
         username: user.username,

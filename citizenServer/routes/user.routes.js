@@ -12,13 +12,6 @@ module.exports = function (app) {
   });
 
 
-  app.post("/A1", [
-    verifySignUp.checkDuplicateUsername,
-    verifySignUp.checkRolesExisted,
-    verifySignUp.checkValidpassword
-  ],
-    controller.signupA1
-  )
 
 
   //A1 sau khi đăng nhập thành công thì có thể cấp tài khoản cho A2
